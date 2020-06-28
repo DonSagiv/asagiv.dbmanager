@@ -1,0 +1,80 @@
+﻿@page "/addPersonView"
+
+@using asagiv.dbmanager.babythankyounotes
+@inject NavigationManager navManager
+
+<h1>Add New Person</h1>
+
+<EditForm Model="@person" OnValidSubmit="onAddNewPersonClick">
+
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Name</span>
+        </div>
+        <input type="text" class="form-control" @bind-value="@person.Name">
+    </div>
+
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Street</span>
+        </div>
+        <input type="text" class="form-control" @bind-value="@person.Street">
+    </div>
+
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">City</span>
+        </div>
+        <input type="text" class="form-control" @bind-value="@person.City">
+    </div>
+
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">State</span>
+        </div>
+        <input type="text" class="form-control" @bind-value="@person.State">
+    </div>
+
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Country</span>
+        </div>
+        <input type="text" class="form-control" @bind-value="@person.Country">
+    </div>
+
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">ZIP</span>
+        </div>
+        <input type="text" class="form-control" @bind-value="@person.Zip">
+    </div>
+
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Family Name</span>
+        </div>
+        <input type="text" class="form-control" @bind-value="@person.FamilyName">
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary" style="margin:5px">Save Person</button>
+    </div>
+
+</EditForm>
+
+@code {
+    private People person;
+
+    public AddPersonView()
+    {
+        person = new People();
+    }
+
+    public void onAddNewPersonClick()
+    {
+        navManager.NavigateTo("/peopleView");
+    }
+}

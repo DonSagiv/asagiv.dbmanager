@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>asagiv.dbmanager.webinterface</AssemblyName>
+    <RootNamespace>asagiv.dbmanager.webinterface</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\asagiv.dbmanager.babythankyounotes\asagiv.dbmanager.babythankyounotes.csproj" />
+  </ItemGroup>
+
+</Project>

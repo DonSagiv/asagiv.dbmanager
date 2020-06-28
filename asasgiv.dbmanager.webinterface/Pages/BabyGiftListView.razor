@@ -1,0 +1,70 @@
+﻿@page "/babyGiftListView"
+
+@using Microsoft.AspNetCore.Http.Extensions
+@using asagiv.dbmanager.babythankyounotes
+@using asagiv.dbmanager.webinterface.Data
+@inject MainDbContextService dbContextService
+@inject NavigationManager navManager
+
+<h1>BabyGiftListView</h1>
+
+<div class="d-flex justify-content-center">
+    <button type="button" class="btn btn-primary" style="margin:5px" @onclick="onAddBabyGiftClick">Add Baby Gift</button>
+</div>
+
+@if (babyGiftList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Gift</th>
+                <th>TY Note Written</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var babyGift in babyGiftList)
+            {
+                <tr>
+                    <td>@babyGift.Name</td>
+                    <td>@babyGift.Gift</td>
+                    <td>@isTyNoteWritten(babyGift)</td>
+                    <td>
+                        <button class="btn btn-link" @onclick="@(async () => await onEditGiftClickAsync(babyGift))">Edit</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code
+{
+    private IList<BabyGiftList> babyGiftList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        babyGiftList = await dbContextService.getBabyGiftListAsync();
+    }
+
+    public string isTyNoteWritten(BabyGiftList babyGift)
+    {
+        return babyGift.TyNoteWritten.Value ? "\u2713" : string.Empty;
+    }
+
+    public void onAddBabyGiftClick(MouseEventArgs e)
+    {
+        navManager.NavigateTo("/addBabyGiftView");
+    }
+
+    public async Task onEditGiftClickAsync(BabyGiftList e)
+    {
+        var giftId = await dbContextService.getGiftFromNameAsync(e.Gift);
+        navManager.NavigateTo($"/addBabyGiftView/{giftId.ToString()}");
+    }
+}

@@ -1,0 +1,62 @@
+﻿@page "/"
+@page "/peopleView"
+
+@using Microsoft.AspNetCore.Http.Extensions
+@using asagiv.dbmanager.babythankyounotes
+@using asagiv.dbmanager.webinterface.Data
+@inject MainDbContextService dbContextService
+@inject NavigationManager navManager
+
+<h1>People</h1>
+
+<div class="d-flex justify-content-center">
+    <button type="button" class="btn btn-primary" style="margin:5px" @onclick="onAddNewPersonClick">Add New Person</button>
+</div>
+
+@if (people == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Street</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Country</th>
+                <th>Zip</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var person in people)
+            {
+                <tr>
+                    <td>@person.Name</td>
+                    <td>@person.Street</td>
+                    <td>@person.City</td>
+                    <td>@person.State</td>
+                    <td>@person.Country</td>
+                    <td>@person.Zip</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code
+{
+    private IList<People> people;
+
+    protected override async Task OnInitializedAsync()
+    {
+        people = await dbContextService.getPeopleAsync();
+    }
+
+    public void onAddNewPersonClick(MouseEventArgs e)
+    {
+        navManager.NavigateTo("/addPersonView", false);
+    }
+}
