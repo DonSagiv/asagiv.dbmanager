@@ -49,17 +49,20 @@ namespace asagiv.dbmanager.webinterface.Data
 
         public async Task addGiftAsync(BabyGifts babyGift, IList<string> peopleList)
         {
-            var giftEntityEntry = await dbContext.BabyGifts.AddAsync(babyGift);
+            if (!(await dbContext.BabyGifts.ContainsAsync(babyGift)))
+                await dbContext.BabyGifts.AddAsync(babyGift);
 
-            var regexString = @"(.*) (\(.*\))";
+            var regexString = @"(.*) \((.*), (.*)\)";
 
             var peopleFiltered = peopleList
                 .Select(x => Regex.Match(x, regexString))
-                .Select(x => x.Groups[1].Value)
+                .Select(x => new string[] { x.Groups[1].Value, x.Groups[2].Value, x.Groups[3].Value })
                 .ToList();
 
             var people = await dbContext.People
-                .Where(x => peopleFiltered.Contains(x.Name))
+                .Where(x => peopleFiltered.Select(y => y[0]).Contains(x.Name))
+                .Where(x => peopleFiltered.Select(y => y[1]).Contains(x.City))
+                .Where(x => peopleFiltered.Select(y => y[2]).Contains(string.IsNullOrWhiteSpace(x.State) ? x.Country : x.State))
                 .ToListAsync();
 
             var peopleBabyGifts = await dbContext.PeopleBabyGifts
