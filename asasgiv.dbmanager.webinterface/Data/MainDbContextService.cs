@@ -39,6 +39,20 @@ namespace asagiv.dbmanager.webinterface.Data
                 .ToListAsync();
         }
 
+        public async Task<People> getPersonFromIdAsync(long personId)
+        {
+            return await dbContext.People
+                .FirstOrDefaultAsync(x => x.PeopleId == personId);
+        }
+
+        public async Task savePersonAsync(People person)
+        {
+            if (!dbContext.People.Contains(person))
+                await dbContext.People.AddAsync(person);
+
+            await dbContext.SaveChangesAsync();
+        }
+
         public async Task<IList<BabyGiftList>> getBabyGiftListAsync()
         {
             return await dbContext.BabyGiftList

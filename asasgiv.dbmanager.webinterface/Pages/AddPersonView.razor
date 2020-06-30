@@ -1,80 +1,100 @@
 ﻿@page "/addPersonView"
+@page "/addPersonView/{personId}"
 
 @using asagiv.dbmanager.babythankyounotes
+@using asagiv.dbmanager.webinterface.Data
+@inject MainDbContextService dbContextService
 @inject NavigationManager navManager
 
-<h1>Add New Person</h1>
+<h1>Edit Person Details</h1>
 
-<EditForm Model="@person" OnValidSubmit="onAddNewPersonClick">
+@if (person == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="@person" OnValidSubmit="onAddNewPersonClickAsync">
 
-    <DataAnnotationsValidator/>
-    <ValidationSummary/>
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Name</span>
+        <div class="input-group input-group-lg" style="margin:5px">
+            <div class="input-group-prepend">
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Name</span>
+            </div>
+            <input type="text" class="form-control" @bind-value="@person.Name">
         </div>
-        <input type="text" class="form-control" @bind-value="@person.Name">
-    </div>
 
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Street</span>
+        <div class="input-group input-group-lg" style="margin:5px">
+            <div class="input-group-prepend">
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Street</span>
+            </div>
+            <input type="text" class="form-control" @bind-value="@person.Street">
         </div>
-        <input type="text" class="form-control" @bind-value="@person.Street">
-    </div>
 
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">City</span>
+        <div class="input-group input-group-lg" style="margin:5px">
+            <div class="input-group-prepend">
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">City</span>
+            </div>
+            <input type="text" class="form-control" @bind-value="@person.City">
         </div>
-        <input type="text" class="form-control" @bind-value="@person.City">
-    </div>
 
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">State</span>
+        <div class="input-group input-group-lg" style="margin:5px">
+            <div class="input-group-prepend">
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">State</span>
+            </div>
+            <input type="text" class="form-control" @bind-value="@person.State">
         </div>
-        <input type="text" class="form-control" @bind-value="@person.State">
-    </div>
 
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Country</span>
+        <div class="input-group input-group-lg" style="margin:5px">
+            <div class="input-group-prepend">
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Country</span>
+            </div>
+            <input type="text" class="form-control" @bind-value="@person.Country">
         </div>
-        <input type="text" class="form-control" @bind-value="@person.Country">
-    </div>
 
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">ZIP</span>
+        <div class="input-group input-group-lg" style="margin:5px">
+            <div class="input-group-prepend">
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">ZIP</span>
+            </div>
+            <input type="text" class="form-control" @bind-value="@person.Zip">
         </div>
-        <input type="text" class="form-control" @bind-value="@person.Zip">
-    </div>
 
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Family Name</span>
+        <div class="input-group input-group-lg" style="margin:5px">
+            <div class="input-group-prepend">
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Family Name</span>
+            </div>
+            <input type="text" class="form-control" @bind-value="@person.FamilyName">
         </div>
-        <input type="text" class="form-control" @bind-value="@person.FamilyName">
-    </div>
 
-    <div class="d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary" style="margin:5px">Save Person</button>
-    </div>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary" style="margin:5px">Save Person</button>
+        </div>
 
-</EditForm>
+    </EditForm>
+}
 
 @code {
+    [Parameter]
+    public string personId { get; set; }
+
     private People person;
 
-    public AddPersonView()
+    protected override async Task OnInitializedAsync()
     {
-        person = new People();
+        if (string.IsNullOrWhiteSpace(personId))
+            person = new People();
+        else
+        {
+            var id = long.Parse(personId);
+            person = await dbContextService.getPersonFromIdAsync(id);
+        }
     }
 
-    public void onAddNewPersonClick()
+    public async Task onAddNewPersonClickAsync()
     {
+        await dbContextService.savePersonAsync(person);
         navManager.NavigateTo("/peopleView");
     }
 }
