@@ -66,10 +66,8 @@ namespace asagiv.dbmanager.webinterface.Data
             if (!(await dbContext.BabyGifts.ContainsAsync(babyGift)))
                 await dbContext.BabyGifts.AddAsync(babyGift);
 
-            var regexString = @"(.*) \((.*), (.*)\)";
-
             var peopleFiltered = peopleList
-                .Select(x => Regex.Match(x, regexString))
+                .Select(x => Regex.Match(x, People.toStringRegex))
                 .Select(x => new string[] { x.Groups[1].Value, x.Groups[2].Value, x.Groups[3].Value })
                 .ToList();
 
@@ -133,6 +131,64 @@ namespace asagiv.dbmanager.webinterface.Data
             return await dbContext.BabyGifts
                 .Where(x => x.BabyGiftId == giftId)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<IList<RobertBabyAnnouncements>> getBabyAnnoucnementsAsync()
+        {
+            return await dbContext.RobertBabyAnnouncements
+                .OrderBy(x => x.People.FamilyName)
+                .ToListAsync();
+        }
+
+        public async Task<IList<string>> getPeopleWithoutAnnouncementsAsync(params string[] additionalPeopleToAdd)
+        {
+            var peopleIds = dbContext.People.Select(x => x.PeopleId);
+
+            var announcementIds = dbContext.RobertBabyAnnouncements
+                .Where(x => x.PeopleId != null)
+                .Select(x => x.PeopleId.Value);
+
+            var idsToAdd = peopleIds.Except(announcementIds).ToList();
+
+            var peopleToAdd = await dbContext.People
+                .Where(x => idsToAdd.Contains(x.PeopleId))
+                .Select(x => x.ToString())
+                .ToListAsync();
+
+            foreach (var personToAdd in additionalPeopleToAdd)
+                peopleToAdd.Add(personToAdd);
+
+            return peopleToAdd;
+        }
+
+        public async Task appendPersonToBirthAnnoucnementsAsync(RobertBabyAnnouncements annoucementPerson, string personName)
+        {
+            var personRegexMatch = Regex.Match(personName, People.toStringRegex);
+
+            var personToAdd = await dbContext.People
+                .Where(x => personRegexMatch.Groups[1].Value == x.Name)
+                .Where(x => personRegexMatch.Groups[2].Value == x.City)
+                .FirstOrDefaultAsync(x => personRegexMatch.Groups[3].Value == (string.IsNullOrWhiteSpace(x.State) ? x.Country : x.State));
+
+            annoucementPerson.People = personToAdd;
+
+            if (!await dbContext.RobertBabyAnnouncements.ContainsAsync(annoucementPerson))
+                await dbContext.RobertBabyAnnouncements.AddAsync(annoucementPerson);
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task<RobertBabyAnnouncements> getAnnouncementFromId(string announcementId)
+        {
+            var id = long.Parse(announcementId);
+
+            return await dbContext.RobertBabyAnnouncements
+                .FirstOrDefaultAsync(x => x.AnnouncementId == id);
+        }
+
+        public async Task<string> getBirthAnnouncementAddressListAsync()
+        {
+            return await DbContextFunctions.createAnnouncementAddressList(dbContext);
         }
         #endregion
     }

@@ -6,6 +6,10 @@ namespace asagiv.dbmanager.babythankyounotes
 {
     public partial class People
     {
+        #region Statics
+        public const string toStringRegex = @"(.*) \((.*), (.*)\)";
+        #endregion
+
         public People()
         {
             PeopleBabyGifts = new HashSet<PeopleBabyGifts>();
@@ -27,10 +31,12 @@ namespace asagiv.dbmanager.babythankyounotes
         public virtual ICollection<PeopleBabyGifts> PeopleBabyGifts { get; set; }
         public virtual ICollection<RobertBabyAnnouncements> RobertBabyAnnouncements { get; set; }
 
+        #region Methods
         public override string ToString()
         {
             var stateCountry = string.IsNullOrWhiteSpace(State) ? Country : State;
             return $"{Name} ({City}, {stateCountry})";
         }
+        #endregion
     }
 }
