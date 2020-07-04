@@ -53,6 +53,15 @@ namespace asagiv.dbmanager.webinterface.Data
             await dbContext.SaveChangesAsync();
         }
 
+        public async Task deletePersonAsync(People person)
+        {
+            if (!dbContext.People.Contains(person)) return;
+
+            dbContext.People.Remove(person);
+
+            await dbContext.SaveChangesAsync();
+        }
+
         public async Task<IList<BabyGiftList>> getBabyGiftListAsync()
         {
             return await dbContext.BabyGiftList
@@ -189,6 +198,15 @@ namespace asagiv.dbmanager.webinterface.Data
         public async Task<string> getBirthAnnouncementAddressListAsync()
         {
             return await DbContextFunctions.createAnnouncementAddressList(dbContext);
+        }
+
+        public async Task deleteBirthAnnoucnement(RobertBabyAnnouncements annoucnement)
+        {
+            if (!dbContext.RobertBabyAnnouncements.Contains(annoucnement)) return;
+
+            dbContext.RobertBabyAnnouncements.Remove(annoucnement);
+
+            await dbContext.SaveChangesAsync();
         }
         #endregion
     }

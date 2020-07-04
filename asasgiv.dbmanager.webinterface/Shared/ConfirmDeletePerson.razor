@@ -1,0 +1,33 @@
+﻿@using asagiv.dbmanager.babythankyounotes
+
+@if (person == null)
+{
+    <p>Loading... </p>
+}
+else
+{
+    <p>Are you sure you want to delete @person.Name?</p>
+
+    <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="onYesClicked">Yes</button>
+        <button type="button" class="btn btn-primary" style="margin:5px" @onclick="onNoClicked">No</button>
+    </div>
+}
+
+@code
+{
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    [Parameter]
+    public People person { get; set; }
+
+    public void onYesClicked()
+    {
+        BlazoredModal.Close();
+    }
+
+    public void onNoClicked()
+    {
+        BlazoredModal.Cancel();
+    }
+}

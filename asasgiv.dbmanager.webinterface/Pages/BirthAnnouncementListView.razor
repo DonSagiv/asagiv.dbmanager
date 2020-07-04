@@ -6,6 +6,7 @@
 @inject MainDbContextService dbContextService
 @inject NavigationManager navManager
 @inject IBlazorFileSaver blazorFileSaver
+@inject IModalService modal
 
 <h1>Birth Announcement List</h1>
 
@@ -27,7 +28,6 @@ else
                 <th>Name</th>
                 <th>Custom Name</th>
                 <th></th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -37,20 +37,20 @@ else
                     <td>@person.People.Name</td>
                     <td>@person.CustomName</td>
                     <td>
-                        <button class="btn btn-link" @onclick="@(() => editAnnouncement(person))" data-toggle="tooltip"
-                                data-placement="top" title="Edit">
-                            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" />
-                            </svg>
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn btn-link" data-toggle="tooltip"
-                                data-placement="top" title="Delete">
-                            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z" />
-                            </svg>
-                        </button>
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-link" @onclick="@(() => editAnnouncement(person))" data-toggle="tooltip"
+                                    data-placement="top" title="Edit">
+                                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" />
+                                </svg>
+                            </button>
+                            <button class="btn btn-link" @onclick="(() => deleteBirthAnnouncementAsync(person))" data-toggle="tooltip"
+                                    data-placement="top" title="Delete">
+                                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z" />
+                                </svg>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             }
@@ -88,5 +88,21 @@ else
     public async Task downloadCsvAsync()
     {
         await Task.CompletedTask;
+    }
+
+    public async Task deleteBirthAnnouncementAsync(RobertBabyAnnouncements announcement)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add("announcement", announcement);
+
+        var a = modal.Show<ConfirmBirthAnnouncementRemoval>("Remove from Birth Annoucnement", parameters);
+        var result = await a.Result;
+
+        if (result.Cancelled) return;
+
+        await dbContextService.deleteBirthAnnoucnement(announcement);
+
+        // Reload the people.
+        await this.OnInitializedAsync();
     }
 }
