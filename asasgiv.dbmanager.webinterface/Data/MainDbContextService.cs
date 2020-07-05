@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography.X509Certificates;
 
 namespace asagiv.dbmanager.webinterface.Data
 {
@@ -27,6 +28,15 @@ namespace asagiv.dbmanager.webinterface.Data
             return await dbContext.People
                 .OrderBy(x => x.FamilyName)
                 .ToListAsync();
+        }
+
+        public async Task<IList<People>> filterPeopleAsync(string filterString)
+        {
+            var asyncEnumerable = await getPeopleAsync();
+
+            return asyncEnumerable
+                .Where(x => x.ToInfoString().Contains(filterString.ToLower()))
+                .ToList();
         }
 
         public async Task<IList<string>> getPeopleNamesAsync()

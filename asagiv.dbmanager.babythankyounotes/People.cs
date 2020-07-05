@@ -37,6 +37,11 @@ namespace asagiv.dbmanager.babythankyounotes
             var stateCountry = string.IsNullOrWhiteSpace(State) ? Country : State;
             return $"{Name} ({City}, {stateCountry})";
         }
+
+        public string ToInfoString()
+        {
+            return $"{Name} {Street} {City} {State} {Country} {Zip} {FamilyName}".ToLower();
+        }
         #endregion
     }
 }
