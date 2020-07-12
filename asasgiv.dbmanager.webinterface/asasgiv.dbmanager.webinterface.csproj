@@ -4,11 +4,15 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>asagiv.dbmanager.webinterface</AssemblyName>
     <RootNamespace>asagiv.dbmanager.webinterface</RootNamespace>
+    <UserSecretsId>2b7f6a3c-658b-4c7d-b2da-a339c22f95c0</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazored.Modal" Version="4.1.0" />
     <PackageReference Include="BlazorFileSaver" Version="3.1.1" />
+    <PackageReference Include="bootstrap-select" Version="1.13.18" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
   </ItemGroup>
 
   <ItemGroup>
