@@ -30,15 +30,22 @@ else
         @foreach (var selectedPerson in selectedPeople.Where(x => x != null).ToList())
         {
             <div class="input-group input-group-lg" style="margin:5px">
-                <div class="input-group-prepend">
-                    <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">From</span>
-                </div>
-                <select type="text" class="form-control" @bind="@selectedPerson.value">
-                    @foreach (var person in people)
-                    {
-                        <option>@person</option>
-                    }
-                </select>
+                <BlazoredTypeahead SearchMethod="findPeopleAsync"
+                                   EnableDropDown="true"
+                                   ShowDropDownOnFocus="true"
+                                   MaximumSuggestions="1000"
+                                   @bind-Value="@selectedPerson.value"
+                                   placeHolder="From">
+
+                    <SelectedTemplate Context="people">
+                        @people.ToString()
+                    </SelectedTemplate>
+
+                    <ResultTemplate Context="people">
+                        @people.ToString()
+                    </ResultTemplate>
+
+                </BlazoredTypeahead>
             </div>
         }
 
@@ -61,19 +68,16 @@ else
     public string giftId { get; set; }
 
     private BabyGifts babyGift;
-    private IList<string> people;
-    private IList<SelectedListItem<string>> selectedPeople;
+    private IList<SelectedListItem<People>> selectedPeople;
 
     protected override async Task OnInitializedAsync()
     {
-        people = await dbContextService.getPeopleNamesAsync();
-        people.Insert(0, "Select a person");
-        selectedPeople = new List<SelectedListItem<string>>();
+        selectedPeople = new List<SelectedListItem<People>>();
 
         if (string.IsNullOrWhiteSpace(giftId))
         {
             babyGift = new BabyGifts();
-            selectedPeople.Add(new SelectedListItem<string>());
+            selectedPeople.Add(new SelectedListItem<People>());
             return;
         }
         else
@@ -84,7 +88,7 @@ else
             var giftPeople = await dbContextService.getPeopleFromGift(babyGift);
 
             foreach (var person in giftPeople)
-                selectedPeople.Add(new SelectedListItem<string> { value = person.ToString() });
+                selectedPeople.Add(new SelectedListItem<People> { value = person });
         }
     }
 
@@ -96,12 +100,17 @@ else
 
     public void addNewPerson(MouseEventArgs e)
     {
-        selectedPeople.Add(new SelectedListItem<string>());
+        selectedPeople.Add(new SelectedListItem<People>());
     }
 
     public void removePerson(MouseEventArgs e)
     {
         if (selectedPeople.Count > 0)
             selectedPeople.RemoveAt(selectedPeople.Count - 1);
+    }
+
+    public async Task<IEnumerable<People>> findPeopleAsync(string filterString)
+    {
+        return await dbContextService.filterPeopleAsync(filterString);
     }
 }

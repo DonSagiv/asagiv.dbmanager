@@ -80,29 +80,18 @@ namespace asagiv.dbmanager.webinterface.Data
                 .ToListAsync();
         }
 
-        public async Task addGiftAsync(BabyGifts babyGift, IList<string> peopleList)
+        public async Task addGiftAsync(BabyGifts babyGift, IList<People> peopleList)
         {
             if (!(await dbContext.BabyGifts.ContainsAsync(babyGift)))
                 await dbContext.BabyGifts.AddAsync(babyGift);
-
-            var peopleFiltered = peopleList
-                .Select(x => Regex.Match(x, People.toStringRegex))
-                .Select(x => new string[] { x.Groups[1].Value, x.Groups[2].Value, x.Groups[3].Value })
-                .ToList();
-
-            var people = await dbContext.People
-                .Where(x => peopleFiltered.Select(y => y[0]).Contains(x.Name))
-                .Where(x => peopleFiltered.Select(y => y[1]).Contains(x.City))
-                .Where(x => peopleFiltered.Select(y => y[2]).Contains(string.IsNullOrWhiteSpace(x.State) ? x.Country : x.State))
-                .ToListAsync();
 
             var peopleBabyGifts = await dbContext.PeopleBabyGifts
                 .Where(x => x.BabyGift == babyGift)
                 .Select(x => x.People)
                 .ToListAsync();
 
-            var peopleToAdd = people.Except(peopleBabyGifts).ToList();
-            var peopleToRemove = peopleBabyGifts.Except(people).ToList();
+            var peopleToAdd = peopleList.Except(peopleBabyGifts).ToList();
+            var peopleToRemove = peopleBabyGifts.Except(peopleList).ToList();
 
             foreach (var person in peopleToAdd)
             {
