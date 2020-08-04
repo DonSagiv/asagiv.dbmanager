@@ -69,7 +69,7 @@ else
 
     public async Task onEditGiftClickAsync(BabyGiftList e)
     {
-        var giftId = await dbContextService.getGiftFromNameAsync(e.Gift);
+        var giftId = await dbContextService.getGift(e.Gift, e.Name);
         navManager.NavigateTo($"/addBabyGiftView/{giftId.ToString()}");
     }
 }

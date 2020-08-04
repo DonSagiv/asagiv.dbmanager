@@ -118,10 +118,19 @@ namespace asagiv.dbmanager.webinterface.Data
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task<long?> getGiftFromNameAsync(string giftName)
+        public async Task<long?> getGift(string gift, string name)
         {
+            var person = await dbContext
+                .People
+                .FirstOrDefaultAsync(x => x.Name == name);
+
+            var personGift = await dbContext
+                .PeopleBabyGifts
+                .FirstOrDefaultAsync(x => x.PeopleId == person.PeopleId);
+
             return await dbContext.BabyGifts
-                .Where(x => x.Gift == giftName)
+                .Where(x => x.Gift == gift)
+                .Where(x => x.BabyGiftId == personGift.BabyGiftId)
                 .Select(x => x.BabyGiftId)
                 .FirstOrDefaultAsync();
         }

@@ -20,7 +20,6 @@ namespace asagiv.dbmanager.UI.Views
 #if DEBUG
             this.AttachDevTools();
 #endif
-            this.Opened += async (s,e) => await onOpenedAsync();
         }
         #endregion
 
@@ -30,12 +29,14 @@ namespace asagiv.dbmanager.UI.Views
             AvaloniaXamlLoader.Load(this);
         }
 
-        private async Task onOpenedAsync()
+        protected override void OnDataContextChanged(EventArgs e)
         {
-            viewModel = DataContext as MainWindowViewModel;
+            base.OnDataContextChanged(e);
 
-            await viewModel.initializeAsync();
+            viewModel = DataContext as MainWindowViewModel;
         }
         #endregion
+
+
     }
 }
