@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace asagiv.dbmanager.babythankyounotes
 {
@@ -36,6 +37,21 @@ namespace asagiv.dbmanager.babythankyounotes
         {
             var stateCountry = string.IsNullOrWhiteSpace(State) ? Country : State;
             return $"{Name} ({City}, {stateCountry})";
+        }
+
+        public string ToAddressString()
+        {
+            var sb = new StringBuilder();
+
+            var stateCountry = Country == "USA" ? State : Country;
+
+            sb.AppendLine(Name);
+            sb.AppendLine(Street);
+            sb.AppendLine($"{City}, {stateCountry}");
+            if (!string.IsNullOrWhiteSpace(Zip))
+                sb.AppendLine(Zip);
+
+            return sb.ToString();
         }
 
         public string ToInfoString()

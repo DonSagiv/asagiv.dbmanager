@@ -21,7 +21,7 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Person</th>
                 <th>Gift</th>
                 <th>TY Note Written</th>
                 <th></th>
@@ -31,7 +31,14 @@ else
             @foreach (var babyGift in babyGiftList)
             {
                 <tr>
-                    <td>@babyGift.Name</td>
+                    <td>
+                        @foreach(var item in babyGift.GetAddressString().Split('\n'))
+                        {
+                            <div>
+                                @item
+                            </div>
+                        }
+                    </td>
                     <td>@babyGift.Gift</td>
                     <td>@isTyNoteWritten(babyGift)</td>
                     <td>
@@ -69,7 +76,7 @@ else
 
     public async Task onEditGiftClickAsync(BabyGiftList e)
     {
-        var giftId = await dbContextService.getGift(e.Gift, e.Name);
+        var giftId = await dbContextService.getGift(e.Gift, e.Name, e.City);
         navManager.NavigateTo($"/addBabyGiftView/{giftId.ToString()}");
     }
 }

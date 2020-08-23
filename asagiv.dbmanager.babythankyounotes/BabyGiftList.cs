@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace asagiv.dbmanager.babythankyounotes
 {
-    public partial class BabyGiftList
+    public class BabyGiftList
     {
         public string Name { get; set; }
         public string Street { get; set; }
@@ -13,5 +14,20 @@ namespace asagiv.dbmanager.babythankyounotes
         public string Zip { get; set; }
         public string Gift { get; set; }
         public bool? TyNoteWritten { get; set; }
+
+        public string GetAddressString()
+        {
+            var sb = new StringBuilder();
+
+            var stateCountry = Country == "USA" ? State : Country;
+
+            sb.AppendLine(Name);
+            sb.AppendLine(Street);
+            sb.AppendLine($"{City}, {stateCountry}");
+            if (!string.IsNullOrWhiteSpace(Zip))
+                sb.AppendLine(Zip);
+
+            return sb.ToString();
+        }
     }
 }

@@ -39,10 +39,17 @@ namespace asagiv.dbmanager.webinterface.Data
                 .ToList();
         }
 
+        public async Task<IList<RobertBabyAnnouncements>> filterAnnouncementsAsync(string filterString)
+        {
+            var asyncEnumeralbe = await getBabyAnnoucnementsAsync();
+
+            return asyncEnumeralbe
+                .Where(x => x.People.ToInfoString().Contains(filterString.ToLower()))
+                .ToList();
+        }
+
         public async Task<IList<string>> getPeopleNamesAsync()
         {
-            Func<People, string> getStateCountry = x => string.IsNullOrWhiteSpace(x.State) ? x.Country : x.State;
-
             return await dbContext.People
                 .OrderBy(x => x.FamilyName)
                 .Select(x => x.ToString())
@@ -118,10 +125,11 @@ namespace asagiv.dbmanager.webinterface.Data
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task<long?> getGift(string gift, string name)
+        public async Task<long?> getGift(string gift, string name, string city)
         {
             var person = await dbContext
                 .People
+                .Where(x => x.City == city)
                 .FirstOrDefaultAsync(x => x.Name == name);
 
             var personGift = await dbContext
