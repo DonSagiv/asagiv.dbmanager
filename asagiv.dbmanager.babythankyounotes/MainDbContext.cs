@@ -8,11 +8,11 @@ namespace asagiv.dbmanager.babythankyounotes
     public class MainDbContext : DbContext
     {
         #region Fields
-        private string _ipAddress;
-        private string _port;
-        private string _database;
-        private string _username;
-        private string _password;
+        private readonly string _ipAddress;
+        private readonly string _port;
+        private readonly string _database;
+        private readonly string _username;
+        private readonly string _password;
         #endregion
 
         public MainDbContext(string ipAddress, string port, string database, string username, string password) 

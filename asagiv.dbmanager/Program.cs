@@ -7,9 +7,9 @@ namespace asagiv.dbmanager
     {
         static async Task Main(string[] args)
         {
-            var dbContext = new MainDbContext();
+            // var dbContext = new MainDbContext();
 
-            await DbFunctions.createAddressListAsync(dbContext);
+            // await DbFunctions.createAddressListAsync(dbContext);
             // await DbFunctions.importAddressesAsync(dbContext, @"C:\Users\DonSa\Desktop\sagivadd.csv");
             // await DbFunctions.addPeopleToBirthAnnouncementsAsync(dbContext);
             // await DbFunctions.addGiftAsync(dbContext);
