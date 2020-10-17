@@ -3,13 +3,16 @@
 @using Microsoft.AspNetCore.Http.Extensions
 @using asagiv.dbmanager.babythankyounotes
 @using asagiv.dbmanager.webinterface.Data
+@using BlazorFileSaver
 @inject MainDbContextService dbContextService
+@inject IBlazorFileSaver blazorFileSaver
 @inject NavigationManager navManager
 
 <h1>Robert Baby Gifts</h1>
 
 <div class="d-flex justify-content-center">
     <button type="button" class="btn btn-primary" style="margin:5px" @onclick="onAddBabyGiftClick">Add Baby Gift</button>
+    <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="downloadGiftListAsync">Download Text</button>
 </div>
 
 @if (babyGiftList == null)
@@ -32,7 +35,7 @@ else
             {
                 <tr>
                     <td>
-                        @foreach(var item in babyGift.GetAddressString().Split('\n'))
+                        @foreach (var item in babyGift.GetAddressString().Split('\n'))
                         {
                             <div>
                                 @item
@@ -72,6 +75,13 @@ else
     public void onAddBabyGiftClick(MouseEventArgs e)
     {
         navManager.NavigateTo("/addBabyGiftView");
+    }
+
+    public async Task downloadGiftListAsync()
+    {
+        var payload = await DbContextFunctions.createBabyGiftList(dbContextService.dbContext);
+        var fileName = "Baby_Gift_List.txt";
+        await blazorFileSaver.SaveAs(fileName, payload);
     }
 
     public async Task onEditGiftClickAsync(BabyGiftList e)

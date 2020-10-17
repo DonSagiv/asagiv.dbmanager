@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace asagiv.dbmanager.babythankyounotes
@@ -8,16 +8,30 @@ namespace asagiv.dbmanager.babythankyounotes
     public class MainDbContext : DbContext
     {
         #region Fields
-        private const string _ipAddress = "192.168.1.4";
-        private const string _port = "5432";
-        private const string _database = "main";
-        private const string _username = "asagiv";
-        private const string _password = "kingkong";
+        private string _ipAddress;
+        private string _port;
+        private string _database;
+        private string _username;
+        private string _password;
         #endregion
 
-        public MainDbContext() { }
+        public MainDbContext(string ipAddress, string port, string database, string username, string password) 
+        {
+            _ipAddress = ipAddress;
+            _port = port;
+            _database = database;
+            _username = username;
+            _password = password;
+        }
 
-        public MainDbContext(DbContextOptions<MainDbContext> options) : base(options) { }
+        public MainDbContext(string ipAddress, string port, string database, string username, string password, DbContextOptions<MainDbContext> options) : base(options) 
+        {
+            _ipAddress = ipAddress;
+            _port = port;
+            _database = database;
+            _username = username;
+            _password = password;
+        }
 
         public virtual DbSet<BabyGiftList> BabyGiftList { get; set; }
         public virtual DbSet<BabyGifts> BabyGifts { get; set; }

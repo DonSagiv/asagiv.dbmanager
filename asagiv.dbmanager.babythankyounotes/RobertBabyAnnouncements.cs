@@ -18,8 +18,6 @@ namespace asagiv.dbmanager.babythankyounotes
         {
             var sb = new StringBuilder();
 
-            People ??= new MainDbContext().People.FirstOrDefault(x => x.PeopleId == PeopleId);
-
             var name = string.IsNullOrWhiteSpace(CustomName) ? People.Name : CustomName;
             var stateCountry = People.Country == "USA" ? People.State : People.Country;
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Configuration;
 
 namespace asagiv.dbmanager.webinterface.Data
 {
@@ -16,9 +16,15 @@ namespace asagiv.dbmanager.webinterface.Data
         #endregion
 
         #region Constructor
-        public MainDbContextService()
+        public MainDbContextService(IConfiguration configuration)
         {
-            dbContext = new MainDbContext();
+            var ipAddress = configuration.GetValue<string>("ConnectionSettings:ipAddress");
+            var port = configuration.GetValue<string>("ConnectionSettings:port");
+            var database = configuration.GetValue<string>("ConnectionSettings:database");
+            var userName = configuration.GetValue<string>("ConnectionSettings:username");
+            var password = configuration.GetValue<string>("ConnectionSettings:password");
+
+            dbContext = new MainDbContext(ipAddress, port, database, userName, password);
         }
         #endregion
 

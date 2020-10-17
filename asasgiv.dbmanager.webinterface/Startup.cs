@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using asagiv.dbmanager.webinterface.Data;
 using BlazorFileSaver;
 using Blazored.Modal;
+using asagiv.dbmanager.babythankyounotes;
 
 namespace asagiv.dbmanager.webinterface
 {
@@ -25,7 +26,6 @@ namespace asagiv.dbmanager.webinterface
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddScoped<MainDbContextService>();
             services.AddBlazorFileSaver();
             services.AddBlazoredModal();
