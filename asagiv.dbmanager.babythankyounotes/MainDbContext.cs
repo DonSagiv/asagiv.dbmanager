@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace asagiv.dbmanager.babythankyounotes
