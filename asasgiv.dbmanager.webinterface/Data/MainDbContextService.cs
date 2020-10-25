@@ -40,7 +40,7 @@ namespace asagiv.dbmanager.webinterface.Data
             var asyncEnumerable = await getFamiliesAsync();
 
             return asyncEnumerable
-                .Where(x => x.ToInfoString().Contains(filterString.ToLower()))
+                .Where(x => x.ToSearchableString().Contains(filterString.ToLower()))
                 .ToList();
         }
 
@@ -75,10 +75,11 @@ namespace asagiv.dbmanager.webinterface.Data
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task<IList<BabyGift>> getBabyGiftListAsync()
+        public async Task<IList<FamilyBabyGift>> getBabyGiftListAsync()
         {
-            return await dbContext.BabyGifts
-                .OrderBy(x => x.giftDescription)
+            return await dbContext.FamilyBabyGifts
+                .OrderBy(x => x.thankYouNoteWritten)
+                .ThenBy(x => x.family.familyName)
                 .ToListAsync();
         }
 
@@ -124,7 +125,7 @@ namespace asagiv.dbmanager.webinterface.Data
         {
             var family = await dbContext
                 .Families
-                .Where(x => x.addresses.FirstOrDefault().City == city)
+                .Where(x => x.addresses.FirstOrDefault().city == city)
                 .FirstOrDefaultAsync(x => x.familyName == name);
 
             var familyGift = await dbContext

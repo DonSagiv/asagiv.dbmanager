@@ -15,7 +15,7 @@
     <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="downloadGiftListAsync">Download Text</button>
 </div>
 
-@if (babyGiftList == null)
+@if (familyBabyGifts == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -24,14 +24,28 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th>Family</th>
                 <th>Gift</th>
+                <th>TY Note Written</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var babyGift in babyGiftList)
+           @foreach (var familyBabyGift in familyBabyGifts)
             {
                 <tr>
-                    <td>@babyGift.giftDescription</td>
+
+                    <td>@foreach(var line in familyBabyGift.family.ToAddressString().Split('\n'))
+                    { <div>@line</div> }
+                    </td>
+
+                    <td>@familyBabyGift.babyGift.giftDescription</td>
+
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" checked="@familyBabyGift.thankYouNoteWritten"/>
+                        </div>
+                    </td>
+
                 </tr>
             }
         </tbody>
@@ -40,11 +54,11 @@ else
 
 @code
 {
-    private IList<BabyGift> babyGiftList;
+    private IList<FamilyBabyGift> familyBabyGifts;
 
     protected override async Task OnInitializedAsync()
     {
-        babyGiftList = await dbContextService.getBabyGiftListAsync();
+        familyBabyGifts = await dbContextService.getBabyGiftListAsync();
     }
 
     public string isTyNoteWritten(BabyGift babyGift)

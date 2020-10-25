@@ -1,15 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 
 namespace asagiv.dbmanager.addresses
 {
     public class Family
     {
         #region Fields
-        private ILazyLoader _lazyLoader;
+        private readonly ILazyLoader _lazyLoader;
+
         private IList<Person> _familyMembers;
         private IList<Address> _addresses;
         #endregion
@@ -41,11 +43,27 @@ namespace asagiv.dbmanager.addresses
         #endregion
 
         #region Methods
-        public string ToInfoString()
+        public string ToSearchableString()
         {
             var memberNames = string.Join(' ', familyMembers.Select(x => x.personName));
 
             return ($"{familyName} {addressHeader} {memberNames}");
+        }
+
+        public string ToAddressString()
+        {
+            var sb = new StringBuilder();
+
+            var primaryAddress = addresses.FirstOrDefault();
+            var stateCountry = primaryAddress.country == "USA" ? primaryAddress.state : primaryAddress.country;
+
+            sb.AppendLine(addressHeader);
+            sb.AppendLine(primaryAddress.street);
+            sb.AppendLine($"{primaryAddress.city}, {stateCountry}");
+            if (!string.IsNullOrEmpty(primaryAddress.zip))
+                sb.AppendLine(primaryAddress.zip);
+
+            return sb.ToString();
         }
         #endregion
     }

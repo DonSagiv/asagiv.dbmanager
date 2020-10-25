@@ -7,7 +7,7 @@
 @inject MainDbContextService dbContextService
 @inject NavigationManager navManager
 
-<h1>People</h1>
+<h1>Addresses</h1>
 
 <div class="d-flex justify-content-center">
     <button type="button" class="btn btn-primary" style="margin:5px" @onclick="onAddNewPersonClick">Add New Person</button>
@@ -55,11 +55,11 @@ else
             {
                 <tr>
                     <td>@family.addressHeader</td>
-                    <td>@family.addresses.FirstOrDefault().Street</td>
-                    <td>@family.addresses.FirstOrDefault().City</td>
-                    <td>@family.addresses.FirstOrDefault().State</td>
-                    <td>@family.addresses.FirstOrDefault().Country</td>
-                    <td>@family.addresses.FirstOrDefault().Zip</td>
+                    <td>@family.addresses.FirstOrDefault()?.street</td>
+                    <td>@family.addresses.FirstOrDefault()?.city</td>
+                    <td>@family.addresses.FirstOrDefault()?.state</td>
+                    <td>@family.addresses.FirstOrDefault()?.country</td>
+                    <td>@family.addresses.FirstOrDefault()?.zip</td>
                     <td>
                         <div class="d-flex justify-content-center">
                             <button class="btn btn-link" @onclick="@(() => editPerson(family))" data-toggle="tooltip"

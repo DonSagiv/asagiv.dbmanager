@@ -14,72 +14,88 @@
 }
 else
 {
-<EditForm Model="@family" OnValidSubmit="onAddNewPersonClickAsync">
+    <EditForm Model="@family" OnValidSubmit="onAddNewPersonClickAsync">
 
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Family Name</span>
-        </div>
-        <input type="text" class="form-control" @bind-value="@family.familyName">
-    </div>
-
-    <div class="input-group input-group-lg" style="margin:5px">
-        <div class="input-group-prepend">
-            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Name</span>
-        </div>
-        <input type="text" class="form-control" @bind-value="@family.addressHeader">
-    </div>
-
-    @foreach (var address in family.addresses)
-    {
         <div class="input-group input-group-lg" style="margin:5px">
             <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Street</span>
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Family Name</span>
             </div>
-            <textarea class="form-control" @bind="@address.Street" />
+            <input type="text" class="form-control" @bind-value="@family.familyName">
         </div>
 
         <div class="input-group input-group-lg" style="margin:5px">
             <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">City</span>
+                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Name</span>
             </div>
-            <input type="text" class="form-control" @bind-value="@address.City">
+            <input type="text" class="form-control" @bind-value="@family.addressHeader">
         </div>
 
-        <div class="input-group input-group-lg" style="margin:5px">
-            <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">State</span>
+        @foreach (var address in family.addresses)
+        {
+            <div class="d-flex align-items-center">
+                <div>Address @(family.addresses.IndexOf(address) + 1)</div>
+                <button type="button" class="btn btn-link" style="margin:5px" @onclick="() => deleteAddress(address)">
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                    </svg>
+                </button>
             </div>
-            <input type="text" class="form-control" @bind-value="@address.State">
+
+            <div class="input-group input-group-lg" style="margin:5px">
+                <div class="input-group-prepend">
+                    <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Street</span>
+                </div>
+                <textarea class="form-control" @bind="@address.street" />
+            </div>
+
+            <div class="input-group input-group-lg" style="margin:5px">
+                <div class="input-group-prepend">
+                    <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">City</span>
+                </div>
+                <input type="text" class="form-control" @bind-value="@address.city">
+            </div>
+
+            <div class="input-group input-group-lg" style="margin:5px">
+                <div class="input-group-prepend">
+                    <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">State</span>
+                </div>
+                <input type="text" class="form-control" @bind-value="@address.state">
+            </div>
+
+            <div class="input-group input-group-lg" style="margin:5px">
+                <div class="input-group-prepend">
+                    <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Country</span>
+                </div>
+                <input type="text" class="form-control" @bind-value="@address.country">
+            </div>
+
+            <div class="input-group input-group-lg" style="margin:5px">
+                <div class="input-group-prepend">
+                    <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">ZIP</span>
+                </div>
+                <input type="text" class="form-control" @bind-value="@address.zip">
+            </div>
+        }
+
+        <div class="d-flex justify-content-center">
+
+            <div class="d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="addNewAddress">
+                    Add Address
+                </button>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary" style="margin:5px">Save Person</button>
+            </div>
+
         </div>
 
-        <div class="input-group input-group-lg" style="margin:5px">
-            <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Country</span>
-            </div>
-            <input type="text" class="form-control" @bind-value="@address.Country">
-        </div>
-
-        <div class="input-group input-group-lg" style="margin:5px">
-            <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">ZIP</span>
-            </div>
-            <input type="text" class="form-control" @bind-value="@address.Zip">
-        </div>
-    }
-
-    <div class="d-flex justify-content-center">
-        <button type="button" class="btn btn-secondary" style="margin:5px">Add Address</button>
-    </div>
-
-    <div class="d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary" style="margin:5px">Save Person</button>
-    </div>
-
-</EditForm>
+    </EditForm>
 }
 
 @code {
@@ -100,6 +116,16 @@ else
             var id = long.Parse(personId);
             family = await dbContextService.getFamilyFromIdAsync(id);
         }
+    }
+
+    public void addNewAddress()
+    {
+        family.addresses.Add(new Address());
+    }
+
+    public void deleteAddress(Address addressToRemove)
+    {
+        family.addresses.Remove(addressToRemove);
     }
 
     public async Task onAddNewPersonClickAsync()

@@ -39,7 +39,7 @@ namespace asagiv.dbmanager
 
                 var family = dbContext.Families
                     .Where(x => x.addressHeader == person.Name)
-                    .Where(x => x.addresses.FirstOrDefault().City == person.City)
+                    .Where(x => x.addresses.FirstOrDefault().city == person.City)
                     .FirstOrDefault();
 
                 var babyGift = new BabyGift
@@ -73,11 +73,11 @@ namespace asagiv.dbmanager
                     {
                         new Address
                         {
-                            Street = people.Street,
-                            City = people.City,
-                            State = people.State,
-                            Zip = people.Zip,
-                            Country = people.Country,
+                            street = people.Street,
+                            city = people.City,
+                            state = people.State,
+                            zip = people.Zip,
+                            country = people.Country,
                         }
                     },
                     familyMembers = new List<Person>()
