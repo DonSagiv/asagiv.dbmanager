@@ -6,8 +6,7 @@
 @using asagiv.dbmanager.webinterface.Data
 @inject MainDbContextService dbContextService
 @inject NavigationManager navManager
-
-<h1>Addresses</h1>
+@inject IModalService modal
 
 <div class="d-flex justify-content-center">
     <button type="button" class="btn btn-primary" style="margin:5px" @onclick="onAddNewPersonClick">Add New Person</button>
@@ -106,20 +105,18 @@ else
 
     public async Task deletePersonAsync(Family family)
     {
-        /*
         var parameters = new ModalParameters();
-        parameters.Add("person", family);
+        parameters.Add("message", $"Are you sure you want to delete the {family.familyName} family?");
 
-        var a = modal.Show<ConfirmDeletePerson>("Delete Person", parameters);
+        var a = modal.Show<PromptModalDialog>("Delete Family", parameters);
+
         var result = await a.Result;
 
-        if (result.Cancelled) return;
+        if (result.Data == null || ((bool)result.Data) != true) return;
 
         await dbContextService.deleteFamilyAsync(family);
 
-        // Reload the people.
         await this.OnInitializedAsync();
-        */
 
         await Task.CompletedTask;
     }

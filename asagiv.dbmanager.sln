@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.dbmanager.babythanky
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.dbmanager.webinterface", "asasgiv.dbmanager.webinterface\asagiv.dbmanager.webinterface.csproj", "{FA8B7C18-D94A-4B7C-8E5E-8465CC402121}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asagiv.dbmanager.addresses", "asagiv.dbmanager.addresses\asagiv.dbmanager.addresses.csproj", "{6028A6B0-FFC6-4269-9BF0-8F826AD0BD74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.dbmanager.addresses", "asagiv.dbmanager.addresses\asagiv.dbmanager.addresses.csproj", "{6028A6B0-FFC6-4269-9BF0-8F826AD0BD74}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

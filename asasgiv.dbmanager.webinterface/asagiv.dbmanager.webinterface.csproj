@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.Modal" Version="5.1.0" />
     <PackageReference Include="Blazored.Typeahead" Version="4.4.0" />
     <PackageReference Include="BlazorFileSaver" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.9" />
