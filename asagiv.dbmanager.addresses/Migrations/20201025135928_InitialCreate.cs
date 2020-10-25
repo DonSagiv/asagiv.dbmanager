@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace asagiv.dbmanager.addresses.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -41,11 +42,11 @@ namespace asagiv.dbmanager.addresses.Migrations
                     addressId = table.Column<long>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     familyId = table.Column<long>(nullable: false),
-                    Street = table.Column<string>(nullable: true),
-                    City = table.Column<string>(nullable: true),
-                    State = table.Column<string>(maxLength: 2, nullable: true),
-                    Zip = table.Column<string>(nullable: true),
-                    Country = table.Column<string>(nullable: true)
+                    street = table.Column<string>(nullable: true),
+                    city = table.Column<string>(nullable: true),
+                    state = table.Column<string>(maxLength: 2, nullable: true),
+                    zip = table.Column<string>(nullable: true),
+                    country = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -92,7 +93,8 @@ namespace asagiv.dbmanager.addresses.Migrations
                     personId = table.Column<long>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     familyId = table.Column<long>(nullable: false),
-                    personName = table.Column<string>(nullable: true)
+                    personName = table.Column<string>(nullable: true),
+                    dateOfBirth = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {

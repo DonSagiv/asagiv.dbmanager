@@ -40,7 +40,7 @@ namespace asagiv.dbmanager.webinterface.Data
             var asyncEnumerable = await getFamiliesAsync();
 
             return asyncEnumerable
-                .Where(x => x.ToSearchableString().Contains(filterString.ToLower()))
+                .Where(x => x.ToSearchableString().ToLower().Contains(filterString.ToLower()))
                 .ToList();
         }
 

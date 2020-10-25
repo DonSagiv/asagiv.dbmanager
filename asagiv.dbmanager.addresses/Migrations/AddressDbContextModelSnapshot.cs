@@ -26,24 +26,24 @@ namespace asagiv.dbmanager.addresses.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<string>("City")
+                    b.Property<string>("city")
                         .HasColumnType("text");
 
-                    b.Property<string>("Country")
-                        .HasColumnType("text");
-
-                    b.Property<string>("State")
-                        .HasColumnType("character varying(2)")
-                        .HasMaxLength(2);
-
-                    b.Property<string>("Street")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Zip")
+                    b.Property<string>("country")
                         .HasColumnType("text");
 
                     b.Property<long>("familyId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("state")
+                        .HasColumnType("character varying(2)")
+                        .HasMaxLength(2);
+
+                    b.Property<string>("street")
+                        .HasColumnType("text");
+
+                    b.Property<string>("zip")
+                        .HasColumnType("text");
 
                     b.HasKey("addressId");
 

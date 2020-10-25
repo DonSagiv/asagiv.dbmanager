@@ -34,7 +34,11 @@ namespace asagiv.dbmanager.addresses
         #endregion
 
         #region Constructor
-        public Family() { }
+        public Family()
+        {
+            _familyMembers = new List<Person>();
+            _addresses = new List<Address>();
+        }
 
         public Family(ILazyLoader lazyLoader)
         {
@@ -46,8 +50,8 @@ namespace asagiv.dbmanager.addresses
         public string ToSearchableString()
         {
             var memberNames = string.Join(' ', familyMembers.Select(x => x.personName));
-
-            return ($"{familyName} {addressHeader} {memberNames}");
+            var searchableString = $"{familyName} {addressHeader} {memberNames}";
+            return searchableString;
         }
 
         public string ToAddressString()

@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace asagiv.dbmanager
@@ -13,16 +12,11 @@ namespace asagiv.dbmanager
     {
         static async Task Main(string[] args)
         {
+            var oldDbContext = new MainDbContext("192.168.1.4", "5432", "main", "asagiv", "kingkong");
             var dbContext = new AddressDbContext("192.168.1.4", "5432", "addresses", "asagiv", "kingkong");
 
-            var person = await dbContext.Families.FirstOrDefaultAsync();
-
-            var address = person.addresses.FirstOrDefault();
-
-            await dbContext.SaveChangesAsync();
-
-            // await UpdatePeopleDbContext(oldDbContext, dbContext);
-            // await updateGiftsDbContext(oldDbContext, dbContext);
+            await UpdatePeopleDbContext(oldDbContext, dbContext);
+            await updateGiftsDbContext(oldDbContext, dbContext);
         }
 
         private static async Task updateGiftsDbContext(MainDbContext oldDbContext, AddressDbContext dbContext)
@@ -57,6 +51,8 @@ namespace asagiv.dbmanager
                 dbContext.BabyGifts.Add(babyGift);
                 dbContext.FamilyBabyGifts.Add(familyBabyGift);
             }
+
+            await dbContext.SaveChangesAsync();
         }
 
         private static async Task UpdatePeopleDbContext(MainDbContext oldDbContext, AddressDbContext dbContext)
@@ -85,6 +81,8 @@ namespace asagiv.dbmanager
 
                 await dbContext.Families.AddAsync(family);
             }
+
+            await dbContext.SaveChangesAsync();
         }
     }
 }
