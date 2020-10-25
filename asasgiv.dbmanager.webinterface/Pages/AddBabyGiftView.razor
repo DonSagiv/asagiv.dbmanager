@@ -2,7 +2,7 @@
 @page "/addBabyGiftView/{giftId}"
 
 @using Microsoft.AspNetCore.Http.Extensions
-@using asagiv.dbmanager.babythankyounotes
+@using asagiv.dbmanager.addresses
 @using asagiv.dbmanager.webinterface.Data
 @inject MainDbContextService dbContextService
 @inject NavigationManager navManager
@@ -24,7 +24,7 @@ else
             <div class="input-group-prepend">
                 <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Gift</span>
             </div>
-            <input type="text" class="form-control" @bind-value="@babyGift.Gift">
+            <input type="text" class="form-control" @bind-value="@babyGift.giftDescription">
         </div>
 
         @foreach (var selectedPerson in selectedPeople.Where(x => x != null).ToList())
@@ -50,7 +50,7 @@ else
         }
 
         <div class="form-check" style="margin:5px">
-            <input type="checkbox" class="form-check-input" id="tyNoteCheck" @bind="@babyGift.TyNoteWritten">
+            <input type="checkbox" class="form-check-input" id="tyNoteCheck">
             <label class="form-check-label" for="tyNoteCheck">Thank You Note Written</label>
         </div>
 
@@ -67,17 +67,17 @@ else
     [Parameter]
     public string giftId { get; set; }
 
-    private BabyGifts babyGift;
-    private IList<SelectedListItem<People>> selectedPeople;
+    private BabyGift babyGift;
+    private IList<SelectedListItem<Family>> selectedPeople;
 
     protected override async Task OnInitializedAsync()
     {
-        selectedPeople = new List<SelectedListItem<People>>();
+        selectedPeople = new List<SelectedListItem<Family>>();
 
         if (string.IsNullOrWhiteSpace(giftId))
         {
-            babyGift = new BabyGifts();
-            selectedPeople.Add(new SelectedListItem<People>());
+            babyGift = new BabyGift();
+            selectedPeople.Add(new SelectedListItem<Family>());
             return;
         }
         else
@@ -88,7 +88,7 @@ else
             var giftPeople = await dbContextService.getPeopleFromGift(babyGift);
 
             foreach (var person in giftPeople)
-                selectedPeople.Add(new SelectedListItem<People> { value = person });
+                selectedPeople.Add(new SelectedListItem<Family> { value = person });
         }
     }
 
@@ -100,7 +100,7 @@ else
 
     public void addNewPerson(MouseEventArgs e)
     {
-        selectedPeople.Add(new SelectedListItem<People>());
+        selectedPeople.Add(new SelectedListItem<Family>());
     }
 
     public void removePerson(MouseEventArgs e)
@@ -109,8 +109,8 @@ else
             selectedPeople.RemoveAt(selectedPeople.Count - 1);
     }
 
-    public async Task<IEnumerable<People>> findPeopleAsync(string filterString)
+    public async Task<IEnumerable<Family>> findPeopleAsync(string filterString)
     {
-        return await dbContextService.filterPeopleAsync(filterString);
+        return await dbContextService.filterFamiliesAsync(filterString);
     }
 }

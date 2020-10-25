@@ -1,18 +1,17 @@
 ﻿using System;
-using asagiv.dbmanager.babythankyounotes;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
+using asagiv.dbmanager.addresses;
 
 namespace asagiv.dbmanager.webinterface.Data
 {
     public class MainDbContextService
     {
         #region Properties
-        public MainDbContext dbContext { get; private set; }
+        public AddressDbContext dbContext { get; private set; }
         #endregion
 
         #region Constructor
@@ -24,108 +23,98 @@ namespace asagiv.dbmanager.webinterface.Data
             var userName = configuration.GetValue<string>("ConnectionSettings:username");
             var password = configuration.GetValue<string>("ConnectionSettings:password");
 
-            dbContext = new MainDbContext(ipAddress, port, database, userName, password);
+            dbContext = new AddressDbContext(ipAddress, port, database, userName, password);
         }
         #endregion
 
         #region Methods
-        public async Task<IList<People>> getPeopleAsync()
+        public async Task<IList<Family>> getFamiliesAsync()
         {
-            return await dbContext.People
-                .OrderBy(x => x.FamilyName)
+            return await dbContext.Families
+                .OrderBy(x => x.familyName)
                 .ToListAsync();
         }
 
-        public async Task<IList<People>> filterPeopleAsync(string filterString)
+        public async Task<IList<Family>> filterFamiliesAsync(string filterString)
         {
-            var asyncEnumerable = await getPeopleAsync();
+            var asyncEnumerable = await getFamiliesAsync();
 
             return asyncEnumerable
                 .Where(x => x.ToInfoString().Contains(filterString.ToLower()))
                 .ToList();
         }
 
-        public async Task<IList<RobertBabyAnnouncements>> filterAnnouncementsAsync(string filterString)
+        public async Task<IList<string>> getFamilyAddressHeadersAsync()
         {
-            var asyncEnumeralbe = await getBabyAnnoucnementsAsync();
-
-            return asyncEnumeralbe
-                .Where(x => x.People.ToInfoString().Contains(filterString.ToLower()))
-                .ToList();
-        }
-
-        public async Task<IList<string>> getPeopleNamesAsync()
-        {
-            return await dbContext.People
-                .OrderBy(x => x.FamilyName)
+            return await dbContext.Families
+                .OrderBy(x => x.addressHeader)
                 .Select(x => x.ToString())
                 .ToListAsync();
         }
 
-        public async Task<People> getPersonFromIdAsync(long personId)
+        public async Task<Family> getFamilyFromIdAsync(long familyId)
         {
-            return await dbContext.People
-                .FirstOrDefaultAsync(x => x.PeopleId == personId);
+            return await dbContext.Families
+                .FirstOrDefaultAsync(x => x.familyId == familyId);
         }
 
-        public async Task savePersonAsync(People person)
+        public async Task saveFamilyAsync(Family family)
         {
-            if (!dbContext.People.Contains(person))
-                await dbContext.People.AddAsync(person);
+            if (!dbContext.Families.Contains(family))
+                await dbContext.Families.AddAsync(family);
 
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task deletePersonAsync(People person)
+        public async Task deleteFamilyAsync(Family family)
         {
-            if (!dbContext.People.Contains(person)) return;
+            if (!dbContext.Families.Contains(family)) return;
 
-            dbContext.People.Remove(person);
+            dbContext.Families.Remove(family);
 
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task<IList<BabyGiftList>> getBabyGiftListAsync()
+        public async Task<IList<BabyGift>> getBabyGiftListAsync()
         {
-            return await dbContext.BabyGiftList
-                .OrderBy(x => x.TyNoteWritten)
-                .ThenBy(x => x.Gift)
+            return await dbContext.BabyGifts
+                .OrderBy(x => x.giftDescription)
                 .ToListAsync();
         }
 
-        public async Task addGiftAsync(BabyGifts babyGift, IList<People> peopleList)
+        public async Task addGiftAsync(BabyGift babyGift, IList<Family> familyList)
         {
             if (!(await dbContext.BabyGifts.ContainsAsync(babyGift)))
                 await dbContext.BabyGifts.AddAsync(babyGift);
 
-            var peopleBabyGifts = await dbContext.PeopleBabyGifts
-                .Where(x => x.BabyGift == babyGift)
-                .Select(x => x.People)
+            var peopleBabyGifts = await dbContext.FamilyBabyGifts
+                .Where(x => x.babyGift == babyGift)
+                .Select(x => x.family)
                 .ToListAsync();
 
-            var peopleToAdd = peopleList.Except(peopleBabyGifts).ToList();
-            var peopleToRemove = peopleBabyGifts.Except(peopleList).ToList();
+            var familiesToAdd = familyList.Except(peopleBabyGifts).ToList();
+            var familiesToRemove = peopleBabyGifts.Except(familyList).ToList();
 
-            foreach (var person in peopleToAdd)
+            foreach (var person in familiesToAdd)
             {
-                var peopleBabyGift = new PeopleBabyGifts
+                var peopleBabyGift = new FamilyBabyGift
                 {
-                    BabyGift = babyGift,
-                    People = person,
+                    babyGift = babyGift,
+                    family = person,
                 };
 
-                var peopleEntityEntry = await dbContext.PeopleBabyGifts.AddAsync(peopleBabyGift);
+                var peopleEntityEntry = await dbContext.FamilyBabyGifts.AddAsync(peopleBabyGift);
             }
 
-            foreach (var person in peopleToRemove)
+            foreach (var person in familiesToRemove)
             {
-                var removeList = dbContext.PeopleBabyGifts
-                    .Where(x => x.People == person)
-                    .Where(x => x.BabyGift == babyGift)
+                var removeList = dbContext.FamilyBabyGifts
+                    .Where(x => x.family == person)
+                    .Where(x => x.babyGift == babyGift)
                     .ToList();
 
                 foreach (var item in removeList)
-                    dbContext.PeopleBabyGifts.Remove(item);
+                    dbContext.FamilyBabyGifts.Remove(item);
             }
 
             await dbContext.SaveChangesAsync();
@@ -133,102 +122,35 @@ namespace asagiv.dbmanager.webinterface.Data
 
         public async Task<long?> getGift(string gift, string name, string city)
         {
-            var person = await dbContext
-                .People
-                .Where(x => x.City == city)
-                .FirstOrDefaultAsync(x => x.Name == name);
+            var family = await dbContext
+                .Families
+                .Where(x => x.addresses.FirstOrDefault().City == city)
+                .FirstOrDefaultAsync(x => x.familyName == name);
 
-            var personGift = await dbContext
-                .PeopleBabyGifts
-                .FirstOrDefaultAsync(x => x.PeopleId == person.PeopleId);
+            var familyGift = await dbContext
+                .FamilyBabyGifts
+                .FirstOrDefaultAsync(x => x.familyId == family.familyId);
 
             return await dbContext.BabyGifts
-                .Where(x => x.Gift == gift)
-                .Where(x => x.BabyGiftId == personGift.BabyGiftId)
-                .Select(x => x.BabyGiftId)
+                .Where(x => x.giftDescription == gift)
+                .Where(x => x.giftId == familyGift.babyGiftId)
+                .Select(x => x.giftId)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IList<People>> getPeopleFromGift(BabyGifts babyGift)
+        public async Task<IList<Family>> getPeopleFromGift(BabyGift babyGift)
         {
-            return await dbContext.PeopleBabyGifts
-                .Where(x => x.BabyGiftId == babyGift.BabyGiftId)
-                .Select(x => x.People)
+            return await dbContext.FamilyBabyGifts
+                .Where(x => x.babyGiftId == babyGift.giftId)
+                .Select(x => x.family)
                 .ToListAsync();
         }
 
-        public async Task<BabyGifts> getGiftFromIdAsync(long? giftId)
+        public async Task<BabyGift> getGiftFromIdAsync(long? giftId)
         {
             return await dbContext.BabyGifts
-                .Where(x => x.BabyGiftId == giftId)
+                .Where(x => x.giftId == giftId)
                 .FirstOrDefaultAsync();
-        }
-
-        public async Task<IList<RobertBabyAnnouncements>> getBabyAnnoucnementsAsync()
-        {
-            return await dbContext.RobertBabyAnnouncements
-                .OrderBy(x => x.People.FamilyName)
-                .ToListAsync();
-        }
-
-        public async Task<IList<string>> getPeopleWithoutAnnouncementsAsync(params string[] additionalPeopleToAdd)
-        {
-            var peopleIds = dbContext.People.Select(x => x.PeopleId);
-
-            var announcementIds = dbContext.RobertBabyAnnouncements
-                .Where(x => x.PeopleId != null)
-                .Select(x => x.PeopleId.Value);
-
-            var idsToAdd = peopleIds.Except(announcementIds).ToList();
-
-            var peopleToAdd = await dbContext.People
-                .Where(x => idsToAdd.Contains(x.PeopleId))
-                .Select(x => x.ToString())
-                .ToListAsync();
-
-            foreach (var personToAdd in additionalPeopleToAdd)
-                peopleToAdd.Add(personToAdd);
-
-            return peopleToAdd;
-        }
-
-        public async Task appendPersonToBirthAnnoucnementsAsync(RobertBabyAnnouncements annoucementPerson, string personName)
-        {
-            var personRegexMatch = Regex.Match(personName, People.toStringRegex);
-
-            var personToAdd = await dbContext.People
-                .Where(x => personRegexMatch.Groups[1].Value == x.Name)
-                .Where(x => personRegexMatch.Groups[2].Value == x.City)
-                .FirstOrDefaultAsync(x => personRegexMatch.Groups[3].Value == (string.IsNullOrWhiteSpace(x.State) ? x.Country : x.State));
-
-            annoucementPerson.People = personToAdd;
-
-            if (!await dbContext.RobertBabyAnnouncements.ContainsAsync(annoucementPerson))
-                await dbContext.RobertBabyAnnouncements.AddAsync(annoucementPerson);
-
-            await dbContext.SaveChangesAsync();
-        }
-
-        public async Task<RobertBabyAnnouncements> getAnnouncementFromId(string announcementId)
-        {
-            var id = long.Parse(announcementId);
-
-            return await dbContext.RobertBabyAnnouncements
-                .FirstOrDefaultAsync(x => x.AnnouncementId == id);
-        }
-
-        public async Task<string> getBirthAnnouncementAddressListAsync()
-        {
-            return await DbContextFunctions.createAnnouncementAddressList(dbContext);
-        }
-
-        public async Task deleteBirthAnnoucnement(RobertBabyAnnouncements annoucnement)
-        {
-            if (!dbContext.RobertBabyAnnouncements.Contains(annoucnement)) return;
-
-            dbContext.RobertBabyAnnouncements.Remove(annoucnement);
-
-            await dbContext.SaveChangesAsync();
         }
         #endregion
     }

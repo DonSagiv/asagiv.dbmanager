@@ -6,6 +6,7 @@ namespace asagiv.dbmanager.addresses
 {
     public class FamilyBabyGift
     {
+        #region Properties
         [Key]
         public long familyBabyGiftId { get; set; }
         [ForeignKey(nameof(family))]
@@ -13,8 +14,12 @@ namespace asagiv.dbmanager.addresses
         [ForeignKey(nameof(babyGift))]
         public long babyGiftId { get; set; }
         public bool thankYouNoteWritten { get; set; }
-
         public Family family { get; set; }
         public BabyGift babyGift { get; set; }
+        #endregion
+
+        #region Constructor
+        public FamilyBabyGift() { }
+        #endregion
     }
 }

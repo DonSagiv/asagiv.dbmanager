@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazored.Modal" Version="5.1.0" />
     <PackageReference Include="Blazored.Typeahead" Version="4.4.0" />
     <PackageReference Include="BlazorFileSaver" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.9" />
@@ -18,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\asagiv.dbmanager.babythankyounotes\asagiv.dbmanager.babythankyounotes.csproj" />
+    <ProjectReference Include="..\asagiv.dbmanager.addresses\asagiv.dbmanager.addresses.csproj" />
   </ItemGroup>
 
 </Project>

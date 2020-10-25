@@ -13,19 +13,27 @@ namespace asagiv.dbmanager
     {
         static async Task Main(string[] args)
         {
-            var oldDbContext = new MainDbContext("192.168.1.4", "5432", "main", "asagiv", "kingkong");
+            var dbContext = new AddressDbContext("192.168.1.4", "5432", "addresses", "asagiv", "kingkong");
 
-            var dbContext = new AddressDbContext();
+            var person = await dbContext.Families.FirstOrDefaultAsync();
+
+            var address = person.addresses.FirstOrDefault();
+
+            await dbContext.SaveChangesAsync();
 
             // await UpdatePeopleDbContext(oldDbContext, dbContext);
+            // await updateGiftsDbContext(oldDbContext, dbContext);
+        }
 
+        private static async Task updateGiftsDbContext(MainDbContext oldDbContext, AddressDbContext dbContext)
+        {
             var peopleBabyGifts = await oldDbContext.PeopleBabyGifts.ToListAsync();
 
-            foreach(var personGift in peopleBabyGifts)
+            foreach (var personGift in peopleBabyGifts)
             {
                 var gift = await oldDbContext.BabyGifts.FirstOrDefaultAsync(x => x.BabyGiftId == personGift.BabyGiftId);
                 var person = await oldDbContext.People.FirstOrDefaultAsync(x => x.PeopleId == personGift.PeopleId);
-                
+
                 if (gift == null || person == null)
                     throw new Exception("Unable to find record.");
 
@@ -49,8 +57,6 @@ namespace asagiv.dbmanager
                 dbContext.BabyGifts.Add(babyGift);
                 dbContext.FamilyBabyGifts.Add(familyBabyGift);
             }
-
-            await dbContext.SaveChangesAsync();;
         }
 
         private static async Task UpdatePeopleDbContext(MainDbContext oldDbContext, AddressDbContext dbContext)

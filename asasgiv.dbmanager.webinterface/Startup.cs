@@ -6,8 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using asagiv.dbmanager.webinterface.Data;
 using BlazorFileSaver;
-using Blazored.Modal;
-using asagiv.dbmanager.babythankyounotes;
 
 namespace asagiv.dbmanager.webinterface
 {
@@ -28,7 +26,6 @@ namespace asagiv.dbmanager.webinterface
             services.AddServerSideBlazor();
             services.AddScoped<MainDbContextService>();
             services.AddBlazorFileSaver();
-            services.AddBlazoredModal();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

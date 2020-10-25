@@ -1,7 +1,7 @@
 ﻿@page "/babyGiftListView"
 
 @using Microsoft.AspNetCore.Http.Extensions
-@using asagiv.dbmanager.babythankyounotes
+@using asagiv.dbmanager.addresses
 @using asagiv.dbmanager.webinterface.Data
 @using BlazorFileSaver
 @inject MainDbContextService dbContextService
@@ -24,34 +24,14 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Person</th>
                 <th>Gift</th>
-                <th>TY Note Written</th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var babyGift in babyGiftList)
             {
                 <tr>
-                    <td>
-                        @foreach (var item in babyGift.GetAddressString().Split('\n'))
-                        {
-                            <div>
-                                @item
-                            </div>
-                        }
-                    </td>
-                    <td>@babyGift.Gift</td>
-                    <td>@isTyNoteWritten(babyGift)</td>
-                    <td>
-                        <button class="btn btn-link" @onclick="@(async () => await onEditGiftClickAsync(babyGift))" data-toggle="tooltip"
-                                data-placement="top" title="Edit">
-                            <svg style="width:24px;height:24px" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" />
-                            </svg>
-                        </button>
-                    </td>
+                    <td>@babyGift.giftDescription</td>
                 </tr>
             }
         </tbody>
@@ -60,16 +40,17 @@ else
 
 @code
 {
-    private IList<BabyGiftList> babyGiftList;
+    private IList<BabyGift> babyGiftList;
 
     protected override async Task OnInitializedAsync()
     {
         babyGiftList = await dbContextService.getBabyGiftListAsync();
     }
 
-    public string isTyNoteWritten(BabyGiftList babyGift)
+    public string isTyNoteWritten(BabyGift babyGift)
     {
-        return babyGift.TyNoteWritten.Value ? "\u2713" : string.Empty;
+        // return babyGift.Value ? "\u2713" : string.Empty;
+        return "\u2713";
     }
 
     public void onAddBabyGiftClick(MouseEventArgs e)
@@ -79,14 +60,17 @@ else
 
     public async Task downloadGiftListAsync()
     {
+        /*
         var payload = await DbContextFunctions.createBabyGiftList(dbContextService.dbContext);
         var fileName = "Baby_Gift_List.txt";
         await blazorFileSaver.SaveAs(fileName, payload);
+        */
+
+        await Task.CompletedTask;
     }
 
-    public async Task onEditGiftClickAsync(BabyGiftList e)
+    public async Task onEditGiftClickAsync(BabyGift e)
     {
-        var giftId = await dbContextService.getGift(e.Gift, e.Name, e.City);
-        navManager.NavigateTo($"/addBabyGiftView/{giftId.ToString()}");
+        await Task.CompletedTask;
     }
 }

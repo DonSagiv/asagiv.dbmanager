@@ -1,100 +1,110 @@
 ﻿@page "/addPersonView"
 @page "/addPersonView/{personId}"
 
-@using asagiv.dbmanager.babythankyounotes
+@using asagiv.dbmanager.addresses
 @using asagiv.dbmanager.webinterface.Data
 @inject MainDbContextService dbContextService
 @inject NavigationManager navManager
 
 <h1>Edit Person Details</h1>
 
-@if (person == null)
+@if (family == null)
 {
     <p>Loading...</p>
 }
 else
 {
-    <EditForm Model="@person" OnValidSubmit="onAddNewPersonClickAsync">
+<EditForm Model="@family" OnValidSubmit="onAddNewPersonClickAsync">
 
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-        <div class="input-group input-group-lg" style="margin:5px">
-            <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Name</span>
-            </div>
-            <input type="text" class="form-control" @bind-value="@person.Name">
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Family Name</span>
         </div>
+        <input type="text" class="form-control" @bind-value="@family.familyName">
+    </div>
 
+    <div class="input-group input-group-lg" style="margin:5px">
+        <div class="input-group-prepend">
+            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Name</span>
+        </div>
+        <input type="text" class="form-control" @bind-value="@family.addressHeader">
+    </div>
+
+    @foreach (var address in family.addresses)
+    {
         <div class="input-group input-group-lg" style="margin:5px">
             <div class="input-group-prepend">
                 <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Street</span>
             </div>
-            <textarea class="form-control" @bind="@person.Street"/>
+            <textarea class="form-control" @bind="@address.Street" />
         </div>
 
         <div class="input-group input-group-lg" style="margin:5px">
             <div class="input-group-prepend">
                 <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">City</span>
             </div>
-            <input type="text" class="form-control" @bind-value="@person.City">
+            <input type="text" class="form-control" @bind-value="@address.City">
         </div>
 
         <div class="input-group input-group-lg" style="margin:5px">
             <div class="input-group-prepend">
                 <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">State</span>
             </div>
-            <input type="text" class="form-control" @bind-value="@person.State">
+            <input type="text" class="form-control" @bind-value="@address.State">
         </div>
 
         <div class="input-group input-group-lg" style="margin:5px">
             <div class="input-group-prepend">
                 <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Country</span>
             </div>
-            <input type="text" class="form-control" @bind-value="@person.Country">
+            <input type="text" class="form-control" @bind-value="@address.Country">
         </div>
 
         <div class="input-group input-group-lg" style="margin:5px">
             <div class="input-group-prepend">
                 <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">ZIP</span>
             </div>
-            <input type="text" class="form-control" @bind-value="@person.Zip">
+            <input type="text" class="form-control" @bind-value="@address.Zip">
         </div>
+    }
 
-        <div class="input-group input-group-lg" style="margin:5px">
-            <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Family Name</span>
-            </div>
-            <input type="text" class="form-control" @bind-value="@person.FamilyName">
-        </div>
+    <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-secondary" style="margin:5px">Add Address</button>
+    </div>
 
-        <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary" style="margin:5px">Save Person</button>
-        </div>
+    <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary" style="margin:5px">Save Person</button>
+    </div>
 
-    </EditForm>
+</EditForm>
 }
 
 @code {
     [Parameter]
     public string personId { get; set; }
 
-    private People person;
+    private Family family;
 
     protected override async Task OnInitializedAsync()
     {
         if (string.IsNullOrWhiteSpace(personId))
-            person = new People();
+        {
+            family = new Family();
+            family.addresses.Add(new Address());
+        }
         else
         {
             var id = long.Parse(personId);
-            person = await dbContextService.getPersonFromIdAsync(id);
+            family = await dbContextService.getFamilyFromIdAsync(id);
         }
     }
 
     public async Task onAddNewPersonClickAsync()
     {
-        await dbContextService.savePersonAsync(person);
+        await dbContextService.saveFamilyAsync(family);
         navManager.NavigateTo("/peopleView");
     }
 }

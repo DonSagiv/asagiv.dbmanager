@@ -6,11 +6,11 @@ namespace asagiv.dbmanager.addresses
     public class AddressDbContext : DbContext
     {
         #region Properties
-        public string ipAddress => "192.168.1.4";
-        public string port => "5432";
-        public string database => "addresses";
-        public string username => "asagiv";
-        public string password => "kingkong";
+        public string ipAddress { get; }
+        public string port { get;  }
+        public string database { get; }
+        public string username { get; }
+        public string password { get; }
         #endregion
 
         #region DbSets
@@ -21,8 +21,23 @@ namespace asagiv.dbmanager.addresses
         #endregion
 
         #region Constructor
-        public AddressDbContext() { }
-        public AddressDbContext(DbContextOptions<AddressDbContext> options) : base(options) { }
+        public AddressDbContext(string ipAddress, string port, string database, string username, string password) 
+        {
+            this.ipAddress = ipAddress;
+            this.port = port;
+            this.database = database;
+            this.username = username;
+            this.password = password;
+        }
+
+        public AddressDbContext(string ipAddress, string port, string database, string username, string password, DbContextOptions<AddressDbContext> options) : base(options) 
+        {
+            this.ipAddress = ipAddress;
+            this.port = port;
+            this.database = database;
+            this.username = username;
+            this.password = password;
+        }
         #endregion
 
         #region Methods
