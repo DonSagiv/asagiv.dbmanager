@@ -15,41 +15,49 @@ namespace asagiv.dbmanager
             var oldDbContext = new MainDbContext("192.168.1.4", "5432", "main", "asagiv", "kingkong");
             var dbContext = new AddressDbContext("192.168.1.4", "5432", "addresses", "asagiv", "kingkong");
 
-            await UpdatePeopleDbContext(oldDbContext, dbContext);
+            // await UpdatePeopleDbContext(oldDbContext, dbContext);
             await updateGiftsDbContext(oldDbContext, dbContext);
         }
 
         private static async Task updateGiftsDbContext(MainDbContext oldDbContext, AddressDbContext dbContext)
         {
-            var peopleBabyGifts = await oldDbContext.PeopleBabyGifts.ToListAsync();
+            var list = await oldDbContext
+                .PeopleBabyGifts
+                .ToListAsync();
 
-            foreach (var personGift in peopleBabyGifts)
+            var groups = list.GroupBy(x => x.BabyGiftId);
+
+            foreach (var personGift in groups)
             {
-                var gift = await oldDbContext.BabyGifts.FirstOrDefaultAsync(x => x.BabyGiftId == personGift.BabyGiftId);
-                var person = await oldDbContext.People.FirstOrDefaultAsync(x => x.PeopleId == personGift.PeopleId);
-
-                if (gift == null || person == null)
-                    throw new Exception("Unable to find record.");
-
-                var family = dbContext.Families
-                    .Where(x => x.addressHeader == person.Name)
-                    .Where(x => x.addresses.FirstOrDefault().city == person.City)
-                    .FirstOrDefault();
+                var gift = await oldDbContext.BabyGifts.FirstOrDefaultAsync(x => x.BabyGiftId == personGift.Key);
 
                 var babyGift = new BabyGift
                 {
                     giftDescription = gift.Gift
                 };
 
-                var familyBabyGift = new FamilyBabyGift
+                foreach (var personGiftGroupItem in personGift.ToList())
                 {
-                    family = family,
-                    babyGift = babyGift,
-                    thankYouNoteWritten = gift.TyNoteWritten
-                };
+                    var person = await oldDbContext.People.FirstOrDefaultAsync(x => x.PeopleId == personGiftGroupItem.PeopleId);
 
-                dbContext.BabyGifts.Add(babyGift);
-                dbContext.FamilyBabyGifts.Add(familyBabyGift);
+                    if (gift == null || person == null)
+                        throw new Exception("Unable to find record.");
+
+                    var family = dbContext.Families
+                        .Where(x => x.addressHeader == person.Name)
+                        .Where(x => x.addresses.FirstOrDefault().city == person.City)
+                        .FirstOrDefault();
+
+                    var familyBabyGift = new FamilyBabyGift
+                    {
+                        family = family,
+                        babyGift = babyGift,
+                        thankYouNoteWritten = gift.TyNoteWritten
+                    };
+
+                    dbContext.BabyGifts.Add(babyGift);
+                    dbContext.FamilyBabyGifts.Add(familyBabyGift);
+                }
             }
 
             await dbContext.SaveChangesAsync();

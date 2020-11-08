@@ -27,32 +27,27 @@ else
             <input type="text" class="form-control" @bind-value="@babyGift.giftDescription">
         </div>
 
-        @foreach (var selectedPerson in selectedPeople.Where(x => x != null).ToList())
+        @foreach (var selectedFamily in selectedFamilies.ToList())
         {
             <div class="input-group input-group-lg" style="margin:5px">
-                <BlazoredTypeahead SearchMethod="findPeopleAsync"
+                <BlazoredTypeahead SearchMethod="findFamiliesAsync"
                                    EnableDropDown="true"
                                    ShowDropDownOnFocus="true"
                                    MaximumSuggestions="1000"
-                                   @bind-Value="@selectedPerson.value"
+                                   @bind-Value="@selectedFamily.value"
                                    placeHolder="From">
 
-                    <SelectedTemplate Context="people">
-                        @people.ToString()
+                    <SelectedTemplate Context="family">
+                        @family.family.ToString()
                     </SelectedTemplate>
 
-                    <ResultTemplate Context="people">
-                        @people.ToString()
+                    <ResultTemplate Context="family">
+                        @family.family.ToString()
                     </ResultTemplate>
 
                 </BlazoredTypeahead>
             </div>
         }
-
-        <div class="form-check" style="margin:5px">
-            <input type="checkbox" class="form-check-input" id="tyNoteCheck">
-            <label class="form-check-label" for="tyNoteCheck">Thank You Note Written</label>
-        </div>
 
         <div class="d-flex justify-content-center">
             <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="addNewPerson">Add Person</button>
@@ -68,49 +63,56 @@ else
     public string giftId { get; set; }
 
     private BabyGift babyGift;
-    private IList<SelectedListItem<Family>> selectedPeople;
+    private IList<SelectedListItem<FamilyBabyGift>> selectedFamilies;
+    private IList<FamilyBabyGift> familyBabyGiftList;
 
     protected override async Task OnInitializedAsync()
     {
-        selectedPeople = new List<SelectedListItem<Family>>();
+        familyBabyGiftList = new List<FamilyBabyGift>();
+        selectedFamilies = new List<SelectedListItem<FamilyBabyGift>>();
 
         if (string.IsNullOrWhiteSpace(giftId))
         {
             babyGift = new BabyGift();
-            selectedPeople.Add(new SelectedListItem<Family>());
-            return;
+            selectedFamilies.Add(new SelectedListItem<FamilyBabyGift>());
         }
         else
         {
             var giftIdNumber = long.Parse(giftId);
             babyGift = await dbContextService.getGiftFromIdAsync(giftIdNumber);
 
-            var giftPeople = await dbContextService.getPeopleFromGift(babyGift);
+            var familyBabyGifts = await dbContextService.getPeopleFromGift(babyGift);
 
-            foreach (var person in giftPeople)
-                selectedPeople.Add(new SelectedListItem<Family> { value = person });
+            foreach (var family in familyBabyGifts)
+                selectedFamilies.Add(new SelectedListItem<FamilyBabyGift> { value = family });
         }
     }
 
-    public async Task onNewGiftValidSubmitAsync()
+    public async Task<IEnumerable<FamilyBabyGift>> findFamiliesAsync(string filterString)
     {
-        await dbContextService.addGiftAsync(babyGift, selectedPeople.Select(x => x.value).ToList());
-        navManager.NavigateTo("/babyGiftListView");
+        var familyBabyGift = await dbContextService.filterFamiliesAsync(filterString);
+
+        return familyBabyGift.Select(x => new FamilyBabyGift
+        {
+            family = x,
+            babyGift = babyGift,
+        });
     }
 
     public void addNewPerson(MouseEventArgs e)
     {
-        selectedPeople.Add(new SelectedListItem<Family>());
+        selectedFamilies.Add(new SelectedListItem<FamilyBabyGift>());
+    }
+
+    public async Task onNewGiftValidSubmitAsync()
+    {
+        await dbContextService.addGiftAsync(babyGift, selectedFamilies.Select(x => x.value).ToList());
+        navManager.NavigateTo("/babyGiftListView");
     }
 
     public void removePerson(MouseEventArgs e)
     {
-        if (selectedPeople.Count > 0)
-            selectedPeople.RemoveAt(selectedPeople.Count - 1);
-    }
-
-    public async Task<IEnumerable<Family>> findPeopleAsync(string filterString)
-    {
-        return await dbContextService.filterFamiliesAsync(filterString);
+        if (selectedFamilies.Count > 0)
+            selectedFamilies.RemoveAt(selectedFamilies.Count - 1);
     }
 }

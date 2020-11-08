@@ -83,40 +83,18 @@ namespace asagiv.dbmanager.webinterface.Data
                 .ToListAsync();
         }
 
-        public async Task addGiftAsync(BabyGift babyGift, IList<Family> familyList)
+        public async Task addGiftAsync(BabyGift babyGift, IList<FamilyBabyGift> familyBabyGiftsToSave)
         {
             if (!(await dbContext.BabyGifts.ContainsAsync(babyGift)))
                 await dbContext.BabyGifts.AddAsync(babyGift);
 
-            var peopleBabyGifts = await dbContext.FamilyBabyGifts
+            var oldFamilyBabyGifts = await dbContext.FamilyBabyGifts
                 .Where(x => x.babyGift == babyGift)
-                .Select(x => x.family)
                 .ToListAsync();
 
-            var familiesToAdd = familyList.Except(peopleBabyGifts).ToList();
-            var familiesToRemove = peopleBabyGifts.Except(familyList).ToList();
-
-            foreach (var person in familiesToAdd)
-            {
-                var peopleBabyGift = new FamilyBabyGift
-                {
-                    babyGift = babyGift,
-                    family = person,
-                };
-
-                var peopleEntityEntry = await dbContext.FamilyBabyGifts.AddAsync(peopleBabyGift);
-            }
-
-            foreach (var person in familiesToRemove)
-            {
-                var removeList = dbContext.FamilyBabyGifts
-                    .Where(x => x.family == person)
-                    .Where(x => x.babyGift == babyGift)
-                    .ToList();
-
-                foreach (var item in removeList)
-                    dbContext.FamilyBabyGifts.Remove(item);
-            }
+            var familyBabyGiftsToRemove = oldFamilyBabyGifts.Except(familyBabyGiftsToSave).ToList();
+            dbContext.FamilyBabyGifts.RemoveRange(familyBabyGiftsToRemove);
+            dbContext.FamilyBabyGifts.UpdateRange(familyBabyGiftsToSave);
 
             await dbContext.SaveChangesAsync();
         }
@@ -139,11 +117,10 @@ namespace asagiv.dbmanager.webinterface.Data
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IList<Family>> getPeopleFromGift(BabyGift babyGift)
+        public async Task<IList<FamilyBabyGift>> getPeopleFromGift(BabyGift babyGift)
         {
             return await dbContext.FamilyBabyGifts
                 .Where(x => x.babyGiftId == babyGift.giftId)
-                .Select(x => x.family)
                 .ToListAsync();
         }
 
@@ -152,6 +129,30 @@ namespace asagiv.dbmanager.webinterface.Data
             return await dbContext.BabyGifts
                 .Where(x => x.giftId == giftId)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task deleteFamilyBabyGift(FamilyBabyGift e)
+        {
+            dbContext.FamilyBabyGifts.Remove(e);
+
+            var anyGifts = await dbContext
+                .FamilyBabyGifts
+                .Where(x => x != e)
+                .AnyAsync(x => e.babyGiftId == x.babyGiftId);
+
+            if(anyGifts == false)
+                dbContext.BabyGifts.Remove(e.babyGift);
+
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task setTyNoteWritten(FamilyBabyGift e)
+        {
+            e.thankYouNoteWritten = !e.thankYouNoteWritten;
+
+            dbContext.FamilyBabyGifts.Update(e);
+
+            await dbContext.SaveChangesAsync();
         }
         #endregion
     }

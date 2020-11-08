@@ -47,6 +47,11 @@ namespace asagiv.dbmanager.addresses
         #endregion
 
         #region Methods
+        public override string ToString()
+        {
+            return ToAddressString();
+        }
+
         public string ToSearchableString()
         {
             var memberNames = string.Join(' ', familyMembers.Select(x => x.personName));
