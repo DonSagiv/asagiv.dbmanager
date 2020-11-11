@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>asagiv.dbmanager.webinterface</AssemblyName>
     <RootNamespace>asagiv.dbmanager.webinterface</RootNamespace>
     <UserSecretsId>2b7f6a3c-658b-4c7d-b2da-a339c22f95c0</UserSecretsId>
