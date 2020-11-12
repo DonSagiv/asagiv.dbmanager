@@ -27,6 +27,9 @@
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "DB_PASSWORD": "kingkong"
+      },
       "publishAllPorts": true,
       "useSSL": true
     }

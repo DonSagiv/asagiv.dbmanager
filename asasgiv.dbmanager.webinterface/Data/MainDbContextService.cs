@@ -17,11 +17,14 @@ namespace asagiv.dbmanager.webinterface.Data
         #region Constructor
         public MainDbContextService(IConfiguration configuration)
         {
-            var ipAddress = configuration.GetValue<string>("ConnectionSettings:ipAddress");
-            var port = configuration.GetValue<string>("ConnectionSettings:port");
-            var database = configuration.GetValue<string>("ConnectionSettings:database");
-            var userName = configuration.GetValue<string>("ConnectionSettings:username");
-            var password = configuration.GetValue<string>("ConnectionSettings:password");
+            var ipAddress = Environment.GetEnvironmentVariable("DB_IP");
+            var port = Environment.GetEnvironmentVariable("DB_PORT");
+            var database = Environment.GetEnvironmentVariable("DB_NAME");
+            var userName = Environment.GetEnvironmentVariable("DB_USERNAME");
+            var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+            if (password == "empty")
+                throw new Exception("Invalid database password.");
 
             dbContext = new AddressDbContext(ipAddress, port, database, userName, password);
         }

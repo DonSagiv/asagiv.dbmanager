@@ -47,6 +47,8 @@ namespace asagiv.dbmanager.webinterface
             // app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseHttpsRedirection();
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
