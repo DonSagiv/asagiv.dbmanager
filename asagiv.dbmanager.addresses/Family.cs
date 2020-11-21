@@ -64,14 +64,10 @@ namespace asagiv.dbmanager.addresses
             var sb = new StringBuilder();
 
             var primaryAddress = addresses.FirstOrDefault();
-            var stateCountry = primaryAddress.country == "USA" ? primaryAddress.state : primaryAddress.country;
-
+            
             sb.AppendLine(addressHeader);
-            sb.AppendLine(primaryAddress.street);
-            sb.AppendLine($"{primaryAddress.city}, {stateCountry}");
-            if (!string.IsNullOrEmpty(primaryAddress.zip))
-                sb.AppendLine(primaryAddress.zip);
-
+            sb.AppendLine(primaryAddress.ToString());
+            
             return sb.ToString();
         }
         #endregion

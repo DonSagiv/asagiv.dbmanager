@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
 namespace asagiv.dbmanager.addresses
 {
@@ -24,7 +25,7 @@ namespace asagiv.dbmanager.addresses
         public string state { get; set; }
         public string zip { get; set; }
         public string country { get; set; }
-        public Family family 
+        public Family family
         {
             get => _lazyLoader.Load(this, ref _family);
             set => _family = value;
@@ -37,6 +38,25 @@ namespace asagiv.dbmanager.addresses
         public Address(ILazyLoader lazyLoader)
         {
             _lazyLoader = lazyLoader;
+        }
+        #endregion
+
+        #region Methods
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            var stateCountry = country == "USA" ? state : country;
+
+            sb.AppendLine(street);
+            sb.AppendLine(city);
+
+            if (!string.IsNullOrWhiteSpace(zip))
+                sb.AppendLine($"{stateCountry}, {zip}");
+            else
+                sb.AppendLine(stateCountry);
+
+            return sb.ToString();
         }
         #endregion
     }
