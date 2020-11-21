@@ -7,6 +7,9 @@ using Microsoft.Extensions.Hosting;
 using asagiv.dbmanager.webinterface.Data;
 using BlazorFileSaver;
 using Blazored.Modal;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace asagiv.dbmanager.webinterface
 {
@@ -28,6 +31,9 @@ namespace asagiv.dbmanager.webinterface
             services.AddScoped<MainDbContextService>();
             services.AddBlazorFileSaver();
             services.AddBlazoredModal();
+            services.AddBlazorise();
+            services.AddBootstrapProviders();
+            services.AddFontAwesomeIcons();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
