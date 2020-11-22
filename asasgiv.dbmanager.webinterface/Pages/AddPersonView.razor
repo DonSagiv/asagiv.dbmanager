@@ -15,153 +15,165 @@ else
     <EditForm Model="@family" OnValidSubmit="onAddNewPersonClickAsync">
 
         <DataAnnotationsValidator />
-        <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+        <Blazorise.ValidationSummary />
 
-        <div class="input-group input-group-lg" style="margin:5px">
-            <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">
-                    Family Name
-                </span>
-            </div>
-            <input type="text" class="form-control" @bind-value="@family.familyName">
-        </div>
+        <Card Margin="Margin.Is1">
 
-        <div class="input-group input-group-lg" style="margin:5px">
-            <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">
-                    Address Header
-                </span>
-            </div>
-            <input type="text" class="form-control" @bind-value="@family.addressHeader">
-        </div>
+            <CardHeader>
+                <Text>
+                    Family Information
+                </Text>
+            </CardHeader>
 
-        <div class="d-flex justify-content-center">
-            <div class="d-flex align-items-center">
-                <div>Family Members</div>
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-link" style="margin:5px" @onclick="addNewMember">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
-                            <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
-                        </svg>
-                    </button>
-                </div>
+            <CardBody>
 
-            </div>
-        </div>
+                <Field Margin="Margin.Is1">
+                    <FieldLabel>Family Name</FieldLabel>
+                    <TextEdit @bind-Text="@family.familyName" />
+                </Field>
+
+                <Field Margin="Margin.Is1">
+                    <FieldLabel>Address Header</FieldLabel>
+                    <TextEdit @bind-Text="@family.addressHeader" />
+                </Field>
+
+            </CardBody>
+
+        </Card>
+
+        <Row Class="d-flex justify-content-center">
+
+            <Button Color="Color.Secondary" Clicked="@addNewMember" Margin="Margin.Is1">
+                Add Family Member
+            </Button>
+
+            <Button Color="Color.Secondary" Clicked="@addNewAddress" Margin="Margin.Is1">
+                Add Address
+            </Button>
+
+            <Button Type="ButtonType.Submit" Margin="Margin.Is1" Color="Color.Primary">
+                Save Family
+            </Button>
+
+        </Row>
+
 
         @foreach (var member in family.familyMembers)
         {
-            <div class="d-flex justify-content-start">
+            <Card Margin="Margin.Is1">
 
-                <div class="input-group input-group-lg" style="margin:5px">
-                    <div class="input-group-prepend">
-                        <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Name</span>
-                    </div>
-                    <input class="form-control" @bind="@member.personName" />
-                </div>
+                <CardHeader>
 
-                <div class="input-group input-group-lg" style="margin:5px">
-                    <div class="input-group-prepend">
-                        <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Date of Birth</span>
-                    </div>
-                    <input type="date" class="form-control" @bind="@member.dateOfBirth" />
-                </div>
+                    <Row Class="d-flex align-items-center">
 
-                <button type="button" class="btn btn-link" style="margin:5px" @onclick="() => deleteMember(member)">
-                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                    </svg>
-                </button>
+                        <Column ColumnSize="ColumnSize.Is11">
+                            <Text>
+                                Family Member
+                            </Text>
+                        </Column>
 
-            </div>
+                        <Column ColumnSize="ColumnSize.Is1">
+                            <button type="button" class="btn btn-link" @onclick="() => deleteMember(member)">
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                </svg>
+                            </button>
+                        </Column>
+
+                    </Row>
+
+                </CardHeader>
+
+                <CardBody>
+
+                    <Row Class="d-flex align-items-center">
+
+                        <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                            <Field ColumnSize="ColumnSize.Is6.OnDesktop" Margin="Margin.Is1">
+                                <FieldLabel>Name</FieldLabel>
+                                <TextEdit @bind-Text="@member.personName" />
+                            </Field>
+                        </Column>
+
+                        <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                            <Field Margin="Margin.Is1">
+                                <FieldLabel>Date of Birth</FieldLabel>
+                                <DateEdit @bind-Date="@member.dateOfBirth" />
+                            </Field>
+                        </Column>
+
+                    </Row>
+
+                </CardBody>
+
+            </Card>
         }
-
-        <div class="d-flex justify-content-center">
-            <div class="d-flex align-items-center">
-                <div>Addresses</div>
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-link" style="margin:5px" @onclick="addNewAddress">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-plus-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
-                            <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
 
         @foreach (var address in family.addresses)
         {
-            <div class="d-flex justify-content-start">
+            <Card Margin="Margin.Is1">
 
-                <div class="container-fluid">
+                <CardHeader>
 
-                    <div class="input-group input-group-lg" style="margin:5px">
-                        <div class="input-group-prepend">
-                            <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Street</span>
-                        </div>
-                        <textarea class="form-control" @bind="@address.street" />
-                    </div>
+                    <Row Class="d-flex align-items-center">
 
-                    <div class="d-flex align-items-center">
+                        <Column ColumnSize="ColumnSize.Is11">
+                            <Text>
+                                Address
+                            </Text>
+                        </Column>
 
-                        <div class="input-group input-group-lg" style="margin:5px">
-                            <div class="input-group-prepend">
-                                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">City</span>
-                            </div>
-                            <input type="text" class="form-control" @bind-value="@address.city">
-                        </div>
+                        <Column ColumnSize="ColumnSize.Is1">
+                            <button type="button" class="btn btn-link" @onclick="() => deleteAddress(address)">
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                </svg>
+                            </button>
+                        </Column>
 
-                        <div class="input-group input-group-lg" style="margin:5px">
-                            <div class="input-group-prepend">
-                                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">State</span>
-                            </div>
-                            <input type="text" class="form-control" @bind-value="@address.state">
-                        </div>
+                    </Row>
 
-                    </div>
+                </CardHeader>
 
-                    <div class="d-flex align-items-center">
+                <CardBody>
 
-                        <div class="input-group input-group-lg" style="margin:5px">
-                            <div class="input-group-prepend">
-                                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Country</span>
-                            </div>
-                            <input type="text" class="form-control" @bind-value="@address.country">
-                        </div>
+                    <Field Margin="Margin.Is1">
+                        <FieldLabel>Street</FieldLabel>
+                        <MemoEdit @bind-Text="@address.street" />
+                    </Field>
 
-                        <div class="input-group input-group-lg" style="margin:5px">
-                            <div class="input-group-prepend">
-                                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">ZIP</span>
-                            </div>
-                            <input type="text" class="form-control" @bind-value="@address.zip">
-                        </div>
+                    <Field Margin="Margin.Is1">
+                        <FieldLabel>City</FieldLabel>
+                        <TextEdit @bind-Text="@address.city" />
+                    </Field>
 
-                    </div>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                            <Field>
+                                <FieldLabel>State</FieldLabel>
+                                <TextEdit @bind-Text="@address.state" />
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is4.OnDesktop">
+                            <Field>
+                                <FieldLabel>Country</FieldLabel>
+                                <TextEdit @bind-Text="@address.country" />
+                            </Field>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is2.OnDesktop">
+                            <Field>
+                                <FieldLabel>Zip</FieldLabel>
+                                <TextEdit @bind-Text="@address.zip" />
+                            </Field>
+                        </Column>
+                    </Row>
 
-                </div>
+                </CardBody>
 
-                <div class="d-flex align-items-center">
-                    <button type="button" class="btn btn-link" style="margin:5px" @onclick="() => deleteAddress(address)">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                        </svg>
-                    </button>
-                </div>
-
-            </div>
+            </Card>
         }
-
-        <div class="d-flex justify-content-center">
-
-            <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary" style="margin:5px">Save Family</button>
-            </div>
-
-        </div>
 
     </EditForm>
 }
