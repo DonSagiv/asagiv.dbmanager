@@ -9,8 +9,24 @@
 @inject NavigationManager navManager
 
 <div class="d-flex justify-content-center">
-    <button type="button" class="btn btn-primary" style="margin:5px" @onclick="onAddBabyGiftClick">Add Baby Gift</button>
-    <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="downloadGiftListAsync">Download Text</button>
+    <button type="button" class="btn btn-primary align-self-start" style="margin:5px" @onclick="onAddBabyGiftClick">Add Baby Gift</button>
+
+    <div class="input-group mb-4" style="max-width:400px;margin:5px">
+        <input type="text" class="form-control" placeholder="Search Gift" aria-label="Search Gift" aria-describedby="searchField"
+               @bind-value="@filterString"
+               @bind-value:event="oninput"
+               @onkeypress="@filterOnKeyPressed">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" id="searchField" @onclick="onSearchClicked">
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-search" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z" />
+                    <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-secondary align-self-start" style="margin:5px" @onclick="downloadGiftListAsync">Download Text</button>
 </div>
 
 @if (familyBabyGifts == null)
@@ -74,6 +90,7 @@ else
 @code
 {
     private IList<FamilyBabyGift> familyBabyGifts;
+    private string filterString;
 
     protected override async Task OnInitializedAsync()
     {
@@ -115,6 +132,24 @@ else
         */
 
         await Task.CompletedTask;
+    }
+
+    public async Task filterOnKeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await onSearchClicked();
+    }
+
+    public async Task onSearchClicked()
+    {
+        if (string.IsNullOrWhiteSpace(filterString))
+        {
+            familyBabyGifts = await dbContextService.getBabyGiftListAsync();
+        }
+        else
+        {
+            familyBabyGifts = await dbContextService.getBabyGiftListAsync(filterString);
+        }
     }
 
     public async Task onEditGiftClickAsync(BabyGift e)

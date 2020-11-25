@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Infrastructure;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,7 +22,7 @@ namespace asagiv.dbmanager.addresses
         [ForeignKey(nameof(babyGift))]
         public long babyGiftId { get; set; }
         public bool thankYouNoteWritten { get; set; }
-        public Family family 
+        public Family family
         {
             get => _lazyLoader.Load(this, ref _family);
             set => _family = value;
@@ -40,6 +40,13 @@ namespace asagiv.dbmanager.addresses
         public FamilyBabyGift(ILazyLoader lazyLoader)
         {
             _lazyLoader = lazyLoader;
+        }
+        #endregion
+
+        #region Methods
+        public override string ToString()
+        {
+            return $"{family.ToSearchableString()} {babyGift.giftDescription}";
         }
         #endregion
     }

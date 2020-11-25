@@ -78,12 +78,21 @@ namespace asagiv.dbmanager.webinterface.Data
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task<IList<FamilyBabyGift>> getBabyGiftListAsync()
+        public async Task<IList<FamilyBabyGift>> getBabyGiftListAsync(string filterString = null)
         {
-            return await dbContext.FamilyBabyGifts
-                .OrderBy(x => x.thankYouNoteWritten)
-                .ThenBy(x => x.family.familyName)
-                .ToListAsync();
+            var familyBabyGifts = await dbContext.FamilyBabyGifts
+                    .OrderBy(x => x.thankYouNoteWritten)
+                    .ThenBy(x => x.family.familyName)
+                    .ToListAsync();
+
+            if (!string.IsNullOrWhiteSpace(filterString))
+            {
+                return familyBabyGifts
+                    .Where(x => x.ToString().Contains(filterString))
+                    .ToList();
+            }
+
+            return familyBabyGifts;
         }
 
         public async Task addGiftAsync(BabyGift babyGift, IList<FamilyBabyGift> familyBabyGiftsToSave)
@@ -143,7 +152,7 @@ namespace asagiv.dbmanager.webinterface.Data
                 .Where(x => x != e)
                 .AnyAsync(x => e.babyGiftId == x.babyGiftId);
 
-            if(anyGifts == false)
+            if (anyGifts == false)
                 dbContext.BabyGifts.Remove(e.babyGift);
 
             await dbContext.SaveChangesAsync();

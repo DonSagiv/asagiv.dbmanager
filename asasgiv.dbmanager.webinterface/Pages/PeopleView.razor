@@ -10,13 +10,11 @@
 @inject IModalService modal
 
 <div class="d-flex justify-content-center">
-    <button type="button" class="btn btn-primary" style="margin:5px" @onclick="onAddNewPersonClick">Add New Person</button>
-</div>
 
-<div class="d-flex justify-content-center">
+    <button type="button" class="btn btn-primary align-self-start" style="margin:5px" @onclick="onAddNewPersonClick">Add New Family</button>
 
     <div class="input-group mb-4" style="max-width:400px;margin:5px">
-        <input type="text" class="form-control" placeholder="Search User" aria-label="Search User" aria-describedby="searchField"
+        <input type="text" class="form-control" placeholder="Search Family" aria-label="Search Family" aria-describedby="searchField"
                @bind-value="@filterString"
                @bind-value:event="oninput"
                @onkeypress="@filterOnKeyPressed">
@@ -31,6 +29,7 @@
     </div>
 
 </div>
+
 
 @if (families == null)
 {

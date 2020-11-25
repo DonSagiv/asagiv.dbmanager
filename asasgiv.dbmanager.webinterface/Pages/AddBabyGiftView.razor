@@ -16,42 +16,62 @@ else
     <EditForm Model="@babyGift" OnValidSubmit="onNewGiftValidSubmitAsync">
 
         <DataAnnotationsValidator />
-        <Microsoft.AspNetCore.Components.Forms.ValidationSummary  />
+        <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
 
-        <div class="input-group input-group-lg" style="margin:5px">
-            <div class="input-group-prepend">
-                <span style="width:200px" class="input-group-text" id="inputGroup-sizing-lg">Gift</span>
-            </div>
-            <input type="text" class="form-control" @bind-value="@babyGift.giftDescription">
+        <Card Margin="Margin.Is1">
+            <CardHeader>
+                <Text>Gift</Text>
+            </CardHeader>
+            <CardBody>
+                <TextEdit @bind-Text="@babyGift.giftDescription"></TextEdit>
+            </CardBody>
+        </Card>
+
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="addNewBenefactor">Add Benefactor</button>
+            <button type="submit" class="btn btn-primary" style="margin:5px">Save Gift</button>
         </div>
 
         @foreach (var selectedFamily in selectedFamilies.ToList())
         {
-            <div class="input-group input-group-lg" style="margin:5px">
-                <BlazoredTypeahead SearchMethod="findFamiliesAsync"
-                                   EnableDropDown="true"
-                                   ShowDropDownOnFocus="true"
-                                   MaximumSuggestions="1000"
-                                   @bind-Value="@selectedFamily.value"
-                                   placeHolder="From">
+            <Card Margin="Margin.Is1">
+                <CardHeader>
+                    <Row Class="d-flex justify-content-between">
 
-                    <SelectedTemplate Context="family">
-                        @family.family.ToString()
-                    </SelectedTemplate>
+                        <Text Class="align-self-center" Margin="Margin.Is3">From</Text>
 
-                    <ResultTemplate Context="family">
-                        @family.family.ToString()
-                    </ResultTemplate>
+                        <button type="button" class="btn btn-link" @onclick="@(() => removeBenefactor(selectedFamily))">
+                            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                            </svg>
+                        </button>
 
-                </BlazoredTypeahead>
-            </div>
+                    </Row>
+
+                </CardHeader>
+                <CardBody>
+
+                    <BlazoredTypeahead SearchMethod="findFamiliesAsync"
+                                       EnableDropDown="true"
+                                       ShowDropDownOnFocus="true"
+                                       MaximumSuggestions="1000"
+                                       @bind-Value="@selectedFamily.value"
+                                       placeHolder="From">
+
+                        <SelectedTemplate Context="family">
+                            @family.family.ToString()
+                        </SelectedTemplate>
+
+                        <ResultTemplate Context="family">
+                            @family.family.ToString()
+                        </ResultTemplate>
+
+                    </BlazoredTypeahead>
+
+                </CardBody>
+            </Card>
         }
-
-        <div class="d-flex justify-content-center">
-            <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="addNewPerson">Add Person</button>
-            <button type="button" class="btn btn-secondary" style="margin:5px" @onclick="removePerson">Remove Person</button>
-            <button type="submit" class="btn btn-primary" style="margin:5px">Save Gift</button>
-        </div>
 
     </EditForm>
 }
@@ -97,7 +117,7 @@ else
         });
     }
 
-    public void addNewPerson(MouseEventArgs e)
+    public void addNewBenefactor(MouseEventArgs e)
     {
         selectedFamilies.Add(new SelectedListItem<FamilyBabyGift>());
     }
@@ -108,9 +128,9 @@ else
         navManager.NavigateTo("/babyGiftListView");
     }
 
-    public void removePerson(MouseEventArgs e)
+    public void removeBenefactor(SelectedListItem<FamilyBabyGift> familyBabyGift)
     {
         if (selectedFamilies.Count > 0)
-            selectedFamilies.RemoveAt(selectedFamilies.Count - 1);
+            selectedFamilies.Remove(familyBabyGift);
     }
 }
