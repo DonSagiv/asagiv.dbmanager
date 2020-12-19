@@ -1,0 +1,14 @@
+I
+@B:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\Address.csutf-8R
+IB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\AddressDbContext.csutf-8J
+AB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\BabyGift.csutf-8H
+?B:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\Family.csutf-8P
+GB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\FamilyBabyGift.csutf-8i
+`B:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\Migrations\20201025135928_InitialCreate.csutf-8t
+iB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\Migrations\20201025135928_InitialCreate.Designer.csutf-8r
+iB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\Migrations\20201122145540_dob_nullable_date_time.csutf-8}
+rB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\Migrations\20201122145540_dob_nullable_date_time.Designer.csutf-8l
+aB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\Migrations\AddressDbContextModelSnapshot.csutf-8H
+?B:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\Person.csutf-8€
+uB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\obj\Debug\net5.0\.NETCoreApp,Version=v5.0.AssemblyAttributes.csutf-8|
+qB:\Github\asagiv.dbmanager\asagiv.dbmanager.addresses\obj\Debug\net5.0\asagiv.dbmanager.addresses.AssemblyInfo.csutf-8

@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\asagiv.dbmanager.addresses\asagiv.dbmanager.addresses.csproj" />
-    <ProjectReference Include="..\asagiv.dbmanager.babythankyounotes\asagiv.dbmanager.babythankyounotes.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace asagiv.dbmanager.addresses
 {
@@ -21,24 +20,6 @@ namespace asagiv.dbmanager.addresses
         #endregion
 
         #region Constructor
-        public AddressDbContext() 
-        {
-            ipAddress = "192.168.1.4";
-            port = "5432";
-            database = "addresses";
-            username = "asagiv";
-            password = "kingkong";
-        }
-
-        public AddressDbContext(DbContextOptions<AddressDbContext> options) : base(options) 
-        {
-            ipAddress = "192.168.1.4";
-            port = "5432";
-            database = "addresses";
-            username = "asagiv";
-            password = "kingkong";
-        }
-
         public AddressDbContext(string ipAddress, string port, string database, string username, string password) 
         {
             this.ipAddress = ipAddress;
