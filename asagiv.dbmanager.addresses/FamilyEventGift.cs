@@ -1,19 +1,18 @@
 ﻿using asagiv.common.mongodb;
 using MongoDB.Bson;
-using System;
 
 namespace asagiv.dbmanager.common
 {
-    public class Person : MongoDbModelBase
+    public class FamilyEventGift : MongoDbModelBase
     {
         #region Properties
         public ObjectId FamilyId { get; set; }
-        public string Name { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public ObjectId EventGift { get; set; }
+        public bool ThankYouNoteWritten { get; set; }
         #endregion
 
         #region Constructor
-        public Person() { }
+        public FamilyEventGift() { }
         #endregion
     }
 }
