@@ -57,7 +57,7 @@ using(var reader = new StreamReader(@"C:\Users\DonSa\Desktop\PgBackup\Addresses\
 
     foreach (var address in addresses)
     {
-        address.FamilyId = families.First(x => x.OldFamilyId == address.OldFamilyId).Id;
+        // address.FamilyId = families.First(x => x.OldFamilyId == address.OldFamilyId).Id;
     }
 
     addressesCollection.InsertMany(addresses);
@@ -73,7 +73,7 @@ using (var reader = new StreamReader(@"C:\Users\DonSa\Desktop\PgBackup\People\_P
 
     foreach (var person in people)
     {
-        person.FamilyId = families.First(x => x.OldFamilyId == person.OldFamilyId).Id;
+        // person.FamilyId = families.First(x => x.OldFamilyId == person.OldFamilyId).Id;
     }
 
     peopleCollection.InsertMany(people);
@@ -101,8 +101,8 @@ using (var reader = new StreamReader(@"C:\Users\DonSa\Desktop\PgBackup\FamilyBab
     foreach(var familyEventGift in familyEventGifts)
     {
         familyEventGift.EventId = eventInfo.Id;
-        familyEventGift.FamilyId = families.First(x => x.OldFamilyId == familyEventGift.OldFamilyId).Id;
-        familyEventGift.GiftId = eventGifts.First(x => x.OldGiftId == familyEventGift.OldGiftId).Id;
+        // familyEventGift.FamilyId = families.First(x => x.OldFamilyId == familyEventGift.OldFamilyId).Id;
+        // familyEventGift.GiftId = eventGifts.First(x => x.OldGiftId == familyEventGift.OldGiftId).Id;
     }
 
     familyEventGiftCollection.InsertMany(familyEventGifts);
@@ -114,7 +114,7 @@ public class ClassMapFamily : ClassMap<Family>
 {
     public ClassMapFamily()
     {
-        Map(x => x.OldFamilyId).Index(0);
+        // Map(x => x.OldFamilyId).Index(0);
         Map(x => x.FamilyName).Index(1);
         Map(x => x.AddressHeader).Index(2);
     }
@@ -124,8 +124,8 @@ public class ClassMapAddress : ClassMap<Address>
 {
     public ClassMapAddress()
     {
-        Map(x => x.OldFamilyId).Index(1);
-        Map(x => x.Street).Index(2);
+        // Map(x => x.OldFamilyId).Index(1);
+        // Map(x => x.Street).Index(2);
         Map(x => x.City).Index(3);
         Map(x => x.State).Index(4);
         Map(x => x.Zip).Index(5);
@@ -137,7 +137,7 @@ public class ClassMapPerson : ClassMap<Person>
 {
     public ClassMapPerson()
     {
-        Map(x => x.OldFamilyId).Index(1);
+        // Map(x => x.OldFamilyId).Index(1);
         Map(x => x.Name).Index(2);
         Map(x => x.DateOfBirth).Index(3);
     }
@@ -147,7 +147,7 @@ public class ClassMapEventGift : ClassMap<EventGift>
 {
     public ClassMapEventGift()
     {
-        Map(x => x.OldGiftId).Index(0);
+        // Map(x => x.OldGiftId).Index(0);
         Map(x => x.GiftDescription).Index(1);
     }
 }
@@ -156,8 +156,8 @@ public class ClassMapFamilyEventGift : ClassMap<FamilyEventGift>
 {
     public ClassMapFamilyEventGift()
     {
-        Map(x => x.OldFamilyId).Index(1);
-        Map(x => x.OldGiftId).Index(2);
+        // Map(x => x.OldFamilyId).Index(1);
+        // Map(x => x.OldGiftId).Index(2);
         Map(x => x.ThankYouNoteWritten).Index(3);
     }
 }
