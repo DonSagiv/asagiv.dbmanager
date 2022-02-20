@@ -1,6 +1,6 @@
 ﻿using asagiv.common.mongodb;
 
-namespace asagiv.dbmanager.common
+namespace asagiv.dbmanager.common.Models
 {
     public class Family : MongoDbModelBase
     {
