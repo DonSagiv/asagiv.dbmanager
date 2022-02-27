@@ -1,6 +1,8 @@
-﻿using System.Linq;
-using asagiv.dbmanager.common.Models;
+﻿using asagiv.dbmanager.common.Models;
 using asagiv.dbmanager.common.MongoDB;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace asagiv.dbmanager.webportal.Data
 {
@@ -47,6 +49,25 @@ namespace asagiv.dbmanager.webportal.Data
 
                 yield return family;
             }
+        }
+
+        public async Task<Family?> GetFamily(ObjectId id)
+        {
+            var family = await _families.ReadAsync(id);
+
+            if(family == null)
+            {
+                return null;
+            }
+
+            var addresses = await _addresses
+                .AsQueryable()
+                .Where(x => x.FamilyId == id)
+                .ToListAsync();
+
+            family.Addresses = addresses;
+
+            return family;
         }
         #endregion
     }

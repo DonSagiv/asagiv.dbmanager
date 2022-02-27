@@ -11,10 +11,16 @@ namespace asagiv.dbmanager.common.Models
         public string AddressHeader { get; set; }
         [BsonIgnore]
         public IList<Address> Addresses { get; set; }
+        [BsonIgnore]
+        public IList<Person> People { get; set; }
         #endregion
 
         #region Constructor
-        public Family() { }
+        public Family() 
+        {
+            Addresses = new List<Address>();
+            People = new List<Person>();
+        }
         #endregion
     }
 }

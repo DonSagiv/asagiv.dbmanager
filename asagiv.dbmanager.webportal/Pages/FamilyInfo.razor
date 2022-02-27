@@ -1,0 +1,39 @@
+﻿@page "/families/{Id}"
+
+@using MongoDB.Bson
+@using asagiv.dbmanager.common.Models
+@using asagiv.dbmanager.webportal.Data
+@inject NavigationManager NavManager
+@inject AddressBookDbService AddressBookService
+
+<div>
+    @if (_family == null)
+    {
+        <Text>Loading...</Text>
+    }
+    else
+    {
+        <div>@_family.AddressHeader</div>
+
+        @if (_family.Addresses.FirstOrDefault() != null)
+        {
+            @foreach (var line in _family.Addresses.First().GetLines())
+            {
+                <div>@line</div>
+            }
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+    private Family? _family;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var objectId = ObjectId.Parse(Id);
+
+        _family = await AddressBookService.GetFamily(objectId);
+    }
+}
