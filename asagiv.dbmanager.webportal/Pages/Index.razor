@@ -1,9 +1,67 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@using MongoDB.Bson
+@using asagiv.dbmanager.webportal.Data
+@using asagiv.dbmanager.common.Models
+@using System.Linq
+@inject NavigationManager NavManager
+@inject AddressBookDbService AddressBookService
 
-<h1>Hello, world!</h1>
+<div>
+    @if (_families == null)
+    {
+        <Text>Loading...</Text>
+    }
+    else
+    {
+        <div>
+            @foreach (var familyChunk in _families.Chunk(3))
+            {
+                <CardDeck>
+                    @foreach (var family in familyChunk)
+                    {
+                        <Card Margin="Margin.Is3.OnY">
+                            <CardBody>
+                                <CardTitle Weight="TextWeight.Bold" Size="4">
+                                    <div>@family.AddressHeader</div>
+                                </CardTitle>
+                                @if (family.Addresses.FirstOrDefault() != null)
+                                {
+                                    <CardText>
+                                        @foreach (var line in family.Addresses.First().GetLines())
+                                        {
+                                            <div>@line</div>
+                                        }
+                                        <Button Clicked="@(_ => OnEditFamilyClicked(family.Id))">
+                                            <Icon Name="IconName.Edit" />
+                                        </Button>
+                                    </CardText>
+                                }
+                            </CardBody>
+                        </Card>
+                    }
+                </CardDeck>
+            }
+        </div>
+    }
+</div>
 
-Welcome to your new app.
+@code {
+    private IList<Family>? _families;
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var familyAwaiter = AddressBookService.GetAllFamiliesAsync();
+
+        _families = await familyAwaiter.ToListAsync();
+    }
+
+    private Task OnEditFamilyClicked(ObjectId familyId)
+    {
+        NavManager.NavigateTo($"families/{familyId.ToString()}");
+
+        return Task.CompletedTask;
+    }
+}

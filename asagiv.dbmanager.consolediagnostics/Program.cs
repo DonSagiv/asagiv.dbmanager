@@ -125,7 +125,7 @@ public class ClassMapAddress : ClassMap<Address>
     public ClassMapAddress()
     {
         // Map(x => x.OldFamilyId).Index(1);
-        // Map(x => x.Street).Index(2);
+        Map(x => x.Street).Index(2);
         Map(x => x.City).Index(3);
         Map(x => x.State).Index(4);
         Map(x => x.Zip).Index(5);

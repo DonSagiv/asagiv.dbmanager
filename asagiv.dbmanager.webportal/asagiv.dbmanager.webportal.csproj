@@ -12,10 +12,12 @@
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.5" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <ProjectReference Include="..\..\asagiv.common\asagiv.common.mongodb\asagiv.common.mongodb.csproj" />
+    <ProjectReference Include="..\asagiv.dbmanager.addresses\asagiv.dbmanager.common.csproj" />
   </ItemGroup>
 
 </Project>

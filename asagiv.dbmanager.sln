@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.common.mongodb", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.dbmanager.consolediagnostics", "asagiv.dbmanager.consolediagnostics\asagiv.dbmanager.consolediagnostics.csproj", "{6E66BCF7-8EBD-4E11-89BC-B77070646899}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asagiv.dbmanager.webportal", "asagiv.dbmanager.webportal\asagiv.dbmanager.webportal.csproj", "{59C5C37B-1961-4158-93E7-9A784F0B7C55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.dbmanager.webportal", "asagiv.dbmanager.webportal\asagiv.dbmanager.webportal.csproj", "{59C5C37B-1961-4158-93E7-9A784F0B7C55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
