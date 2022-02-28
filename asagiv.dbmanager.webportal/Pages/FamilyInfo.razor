@@ -9,7 +9,7 @@
 
 <PageTitle>Family Information</PageTitle>
 
-<h1 class="card-header">Family Information</h1>
+<h1>Family Information</h1>
 
 @if (_family == null)
 {
@@ -35,13 +35,15 @@ else
 
         </Fields>
 
-
+        <Button Color="Color.Secondary" Clicked="OnAddAddressClicked" Margin="Margin.Is3.OnY">Add Address</Button>
 
         @foreach (var address in _family.Addresses)
         {
+            <Divider />
+
             <Field>
                 <FieldLabel>Street</FieldLabel>
-                <MemoEdit @bind-Text="@address.Street" AutoSize/>
+                <MemoEdit @bind-Text="@address.Street" AutoSize />
             </Field>
 
             <Fields>
@@ -67,9 +69,15 @@ else
                 </Field>
 
             </Fields>
+
+            <Button Color="Color.Secondary" Margin="Margin.Is3.OnY" Clicked="@(_ => OnDeleteAddressClicked(address))">Delete Address</Button>
+
+            <Divider />
         }
 
-        <Button Color="Color.Primary" Clicked="OnSaveClickedAsync">Save</Button>
+        <div>
+            <Button Color="Color.Primary" Margin="Margin.Is3.OnY" Clicked="OnSaveClickedAsync">Save</Button>
+        </div>
     </div>
 }
 
@@ -80,15 +88,35 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if(ObjectId.TryParse(Id, out var objectId))
+        if (ObjectId.TryParse(Id, out var objectId))
         {
-            _family = await AddressBookService.GetFamilyAsync(objectId);    
+            _family = await AddressBookService.GetFamilyAsync(objectId);
         }
+    }
+
+    private void OnAddAddressClicked()
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        _family.Addresses.Add(new asagiv.dbmanager.common.Models.Address());
+    }
+
+    private void OnDeleteAddressClicked(asagiv.dbmanager.common.Models.Address address)
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        _family.Addresses.Remove(address);
     }
 
     private async Task OnSaveClickedAsync()
     {
-        if(_family == null)
+        if (_family == null)
         {
             return;
         }
