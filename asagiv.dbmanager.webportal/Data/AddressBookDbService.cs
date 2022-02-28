@@ -51,7 +51,7 @@ namespace asagiv.dbmanager.webportal.Data
             }
         }
 
-        public async Task<Family?> GetFamily(ObjectId id)
+        public async Task<Family?> GetFamilyAsync(ObjectId id)
         {
             var family = await _families.ReadAsync(id);
 
@@ -68,6 +68,16 @@ namespace asagiv.dbmanager.webportal.Data
             family.Addresses = addresses;
 
             return family;
+        }
+
+        public async Task SaveFamilyAsync(Family family)
+        {
+            await _families.AppendAsync(family);
+
+            foreach(var address in family.Addresses)
+            {
+                await _addresses.AppendAsync(address);
+            }
         }
         #endregion
     }

@@ -6,24 +6,72 @@
 @inject NavigationManager NavManager
 @inject AddressBookDbService AddressBookService
 
-<div>
-    @if (_family == null)
-    {
-        <Text>Loading...</Text>
-    }
-    else
-    {
-        <div>@_family.AddressHeader</div>
 
-        @if (_family.Addresses.FirstOrDefault() != null)
+<PageTitle>Family Information</PageTitle>
+
+<h1 class="card-header">Family Information</h1>
+
+@if (_family == null)
+{
+    <div>
+        <Text>Loading...</Text>
+    </div>
+}
+else
+{
+    <div class="m-4">
+
+        <Fields>
+
+            <Field ColumnSize="ColumnSize.Is4">
+                <FieldLabel>Family Name</FieldLabel>
+                <TextEdit Size="Size.ExtraLarge" @bind-Text="@_family.FamilyName" />
+            </Field>
+
+            <Field ColumnSize="ColumnSize.Is8">
+                <FieldLabel>Family Address Header</FieldLabel>
+                <TextEdit Size="Size.ExtraLarge" @bind-Text="@_family.AddressHeader" />
+            </Field>
+
+        </Fields>
+
+
+
+        @foreach (var address in _family.Addresses)
         {
-            @foreach (var line in _family.Addresses.First().GetLines())
-            {
-                <div>@line</div>
-            }
+            <Field>
+                <FieldLabel>Street</FieldLabel>
+                <MemoEdit @bind-Text="@address.Street" AutoSize/>
+            </Field>
+
+            <Fields>
+
+                <Field ColumnSize="ColumnSize.Is4">
+                    <FieldLabel>City</FieldLabel>
+                    <TextEdit TextOverflow="TextOverflow.Wrap" @bind-Text="@address.City" />
+                </Field>
+
+                <Field ColumnSize="ColumnSize.Is3">
+                    <FieldLabel>State</FieldLabel>
+                    <TextEdit @bind-Text="@address.State" />
+                </Field>
+
+                <Field ColumnSize="ColumnSize.Is2">
+                    <FieldLabel>Zip</FieldLabel>
+                    <TextEdit @bind-Text="@address.Zip" />
+                </Field>
+
+                <Field ColumnSize="ColumnSize.Is3">
+                    <FieldLabel>Country</FieldLabel>
+                    <TextEdit @bind-Text="@address.Country" />
+                </Field>
+
+            </Fields>
         }
-    }
-</div>
+
+        <Button Color="Color.Primary" Clicked="OnSaveClickedAsync">Save</Button>
+    </div>
+}
 
 @code {
     [Parameter]
@@ -32,8 +80,21 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var objectId = ObjectId.Parse(Id);
+        if(ObjectId.TryParse(Id, out var objectId))
+        {
+            _family = await AddressBookService.GetFamilyAsync(objectId);    
+        }
+    }
 
-        _family = await AddressBookService.GetFamily(objectId);
+    private async Task OnSaveClickedAsync()
+    {
+        if(_family == null)
+        {
+            return;
+        }
+
+        await AddressBookService.SaveFamilyAsync(_family);
+
+        NavManager.NavigateTo("");
     }
 }

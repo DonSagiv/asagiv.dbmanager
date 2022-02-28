@@ -28,12 +28,14 @@ namespace asagiv.dbmanager.common.Models
             {
                 lines.Add(streetLine);
             }
-            
-            lines.Add($"{City}, {State} {Zip}");
 
-            if (Country != "USA")
+            if (Country == "USA")
             {
-                lines.Add($"{Country}");
+                lines.Add($"{City}, {State} {Zip}");
+            }
+            else
+            {
+                lines.Add($"{City}, {Country} {Zip}");
             }
 
             return lines.ToArray();
