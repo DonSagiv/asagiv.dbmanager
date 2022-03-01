@@ -67,16 +67,38 @@ namespace asagiv.dbmanager.webportal.Data
 
             family.Addresses = addresses;
 
+            var people = await _people
+                .AsQueryable()
+                .Where(x => x.FamilyId == id)
+                .ToListAsync();
+            
+            family.People = people;
+
             return family;
         }
 
-        public async Task SaveFamilyAsync(Family family)
+        public async Task SaveFamilyAsync(Family family, IList<Address>? removedAddresses, IList<Person>? removedPeople)
         {
             await _families.AppendAsync(family);
 
-            foreach(var address in family.Addresses)
+            if(removedAddresses != null)
+            {
+                await _addresses.DeleteManyAsync(removedAddresses.Select(x => x.Id).ToArray());
+            }
+
+            if(removedPeople != null)
+            {
+                await _people.DeleteManyAsync(removedPeople.Select(x => x.Id).ToArray());
+            }
+
+            foreach (var address in family.Addresses)
             {
                 await _addresses.AppendAsync(address);
+            }
+
+            foreach(var person in family.People)
+            {
+                await _people.AppendAsync(person);
             }
         }
         #endregion

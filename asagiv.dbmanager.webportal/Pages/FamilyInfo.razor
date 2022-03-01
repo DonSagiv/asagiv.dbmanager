@@ -9,7 +9,7 @@
 
 <PageTitle>Family Information</PageTitle>
 
-<h1>Family Information</h1>
+<h1 class="text-center">Family Information</h1>
 
 @if (_family == null)
 {
@@ -21,63 +21,110 @@ else
 {
     <div class="m-4">
 
-        <Fields>
+        <CardDeck>
+            <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
 
-            <Field ColumnSize="ColumnSize.Is4">
-                <FieldLabel>Family Name</FieldLabel>
-                <TextEdit Size="Size.ExtraLarge" @bind-Text="@_family.FamilyName" />
-            </Field>
+                <Div Margin="Margin.Is3">
+                    <Fields>
 
-            <Field ColumnSize="ColumnSize.Is8">
-                <FieldLabel>Family Address Header</FieldLabel>
-                <TextEdit Size="Size.ExtraLarge" @bind-Text="@_family.AddressHeader" />
-            </Field>
+                        <Field ColumnSize="ColumnSize.Is4">
+                            <FieldLabel>Family Name</FieldLabel>
+                            <TextEdit Size="Size.ExtraLarge" @bind-Text="@_family.FamilyName" />
+                        </Field>
 
-        </Fields>
+                        <Field ColumnSize="ColumnSize.Is8">
+                            <FieldLabel>Family Address Header</FieldLabel>
+                            <TextEdit Size="Size.ExtraLarge" @bind-Text="@_family.AddressHeader" />
+                        </Field>
 
-        <Button Color="Color.Secondary" Clicked="OnAddAddressClicked" Margin="Margin.Is3.OnY">Add Address</Button>
+                    </Fields>
+
+                </Div>
+
+            </Card>
+        </CardDeck>
+
+        <Button Color="Color.Secondary" Clicked="OnAddAddressClicked" Margin="Margin.Is3.OnY">Add New Address</Button>
 
         @foreach (var address in _family.Addresses)
         {
-            <Divider />
+            <CardDeck>
+                <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
 
-            <Field>
-                <FieldLabel>Street</FieldLabel>
-                <MemoEdit @bind-Text="@address.Street" AutoSize />
-            </Field>
+                    <Div Margin="Margin.Is3">
 
-            <Fields>
+                        <Field>
+                            <FieldLabel>Street</FieldLabel>
+                            <MemoEdit @bind-Text="@address.Street" AutoSize />
+                        </Field>
 
-                <Field ColumnSize="ColumnSize.Is4">
-                    <FieldLabel>City</FieldLabel>
-                    <TextEdit TextOverflow="TextOverflow.Wrap" @bind-Text="@address.City" />
-                </Field>
+                        <Fields>
 
-                <Field ColumnSize="ColumnSize.Is3">
-                    <FieldLabel>State</FieldLabel>
-                    <TextEdit @bind-Text="@address.State" />
-                </Field>
+                            <Field ColumnSize="ColumnSize.Is4">
+                                <FieldLabel>City</FieldLabel>
+                                <TextEdit TextOverflow="TextOverflow.Wrap" @bind-Text="@address.City" />
+                            </Field>
 
-                <Field ColumnSize="ColumnSize.Is2">
-                    <FieldLabel>Zip</FieldLabel>
-                    <TextEdit @bind-Text="@address.Zip" />
-                </Field>
+                            <Field ColumnSize="ColumnSize.Is3">
+                                <FieldLabel>State</FieldLabel>
+                                <TextEdit @bind-Text="@address.State" />
+                            </Field>
 
-                <Field ColumnSize="ColumnSize.Is3">
-                    <FieldLabel>Country</FieldLabel>
-                    <TextEdit @bind-Text="@address.Country" />
-                </Field>
+                            <Field ColumnSize="ColumnSize.Is2">
+                                <FieldLabel>Zip</FieldLabel>
+                                <TextEdit @bind-Text="@address.Zip" />
+                            </Field>
 
-            </Fields>
+                            <Field ColumnSize="ColumnSize.Is3">
+                                <FieldLabel>Country</FieldLabel>
+                                <TextEdit @bind-Text="@address.Country" />
+                            </Field>
 
-            <Button Color="Color.Secondary" Margin="Margin.Is3.OnY" Clicked="@(_ => OnDeleteAddressClicked(address))">Delete Address</Button>
+                        </Fields>
 
-            <Divider />
+                        <Button Color="Color.Secondary" Margin="Margin.Is3.FromTop" Clicked="@(_ => OnDeleteAddressClicked(address))">Delete Address</Button>
+
+                    </Div>
+
+                </Card>
+            </CardDeck>
+        }
+
+        <Button Color="Color.Secondary" Clicked="OnAddPersonClicked" Margin="Margin.Is3.OnY">Add New Person</Button>
+
+        @foreach (var person in _family.People)
+        {
+            <CardDeck>
+                <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
+
+                    <Div Margin="Margin.Is3">
+
+                        <Fields>
+
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Name</FieldLabel>
+                                <TextEdit @bind-Text="@person.Name" />
+                            </Field>
+
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Name</FieldLabel>
+                                <DateEdit TValue="DateTime?" @bind-Date="@person.DateOfBirth" />
+                            </Field>
+
+                        </Fields>
+
+                        <Button Color="Color.Secondary" Margin="Margin.Is3.FromTop" Clicked="@(_ => OnDeletePersonClicked(person))">Delete Person</Button>
+
+                    </Div>
+
+                </Card>
+            </CardDeck>
         }
 
         <div>
             <Button Color="Color.Primary" Margin="Margin.Is3.OnY" Clicked="OnSaveClickedAsync">Save</Button>
         </div>
+
     </div>
 }
 
@@ -85,9 +132,15 @@ else
     [Parameter]
     public string? Id { get; set; }
     private Family? _family;
+    private IList<asagiv.dbmanager.common.Models.Address>? _removedAddresses;
+    private IList<Person>? _removedPeople;
 
     protected override async Task OnInitializedAsync()
     {
+        _removedAddresses = new List<asagiv.dbmanager.common.Models.Address>();
+        _removedPeople = new List<Person>();
+
+
         if (ObjectId.TryParse(Id, out var objectId))
         {
             _family = await AddressBookService.GetFamilyAsync(objectId);
@@ -101,7 +154,17 @@ else
             return;
         }
 
-        _family.Addresses.Add(new asagiv.dbmanager.common.Models.Address());
+        _family.Addresses.Add(new asagiv.dbmanager.common.Models.Address { FamilyId = _family.Id });
+    }
+
+    private void OnAddPersonClicked()
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        _family.People.Add(new Person { FamilyId = _family.Id });
     }
 
     private void OnDeleteAddressClicked(asagiv.dbmanager.common.Models.Address address)
@@ -112,6 +175,20 @@ else
         }
 
         _family.Addresses.Remove(address);
+
+        _removedAddresses?.Add(address);
+    }
+
+    private void OnDeletePersonClicked(Person person)
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        _family.People.Remove(person);
+
+        _removedPeople?.Add(person);
     }
 
     private async Task OnSaveClickedAsync()
@@ -121,7 +198,7 @@ else
             return;
         }
 
-        await AddressBookService.SaveFamilyAsync(_family);
+        await AddressBookService.SaveFamilyAsync(_family, _removedAddresses, _removedPeople);
 
         NavManager.NavigateTo("");
     }

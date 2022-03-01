@@ -1,6 +1,5 @@
 ﻿using asagiv.common.mongodb;
 using asagiv.dbmanager.common.Models;
-using System;
 
 namespace asagiv.dbmanager.common.MongoDB
 {
