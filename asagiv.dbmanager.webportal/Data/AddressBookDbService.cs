@@ -77,6 +77,11 @@ namespace asagiv.dbmanager.webportal.Data
             return family;
         }
 
+        public async Task DeleteFamilyAsync(ObjectId id)
+        {
+            await _families.DeleteAsync(id);
+        }
+
         public async Task SaveFamilyAsync(Family family, IList<Address>? removedAddresses, IList<Person>? removedPeople)
         {
             await _families.AppendAsync(family);

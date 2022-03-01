@@ -36,9 +36,19 @@
                                         {
                                             <div>@line</div>
                                         }
-                                        <Button Clicked="@(_ => OnEditFamilyClicked(family.Id))">
-                                            <Icon Name="IconName.Edit" />
-                                        </Button>
+
+                                        <div>
+
+                                            <Button Clicked="@(_ => OnEditFamilyClickedAsync(family.Id))">
+                                                <Icon Name="IconName.Edit" />
+                                            </Button>
+
+                                            <Button Clicked="@(_ => OnDeleteFamilyClicked(family))">
+                                                <Icon Name="IconName.Delete" />
+                                            </Button>
+
+                                        </div>
+
                                     </CardText>
                                 }
                             </CardBody>
@@ -47,25 +57,77 @@
                 </CardDeck>
             }
         </div>
+
+        <Modal @ref="deleteFamilyModal">
+            <ModalContent Centered="true">
+                <ModalHeader>
+                    Delete Family
+                </ModalHeader>
+                <ModalBody>
+                    @($"Are you sure you want to delte {_familyToDelete?.FamilyName}?") 
+                </ModalBody>
+                <ModalFooter>
+                    <Button Color="Color.Secondary" Clicked="DeleteFamilyAsync">Yes</Button>
+                    <Button Color="Color.Secondary" Clicked="CloseDialog">No</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
     }
 </div>
 
 @code {
     private IList<Family>? _families;
+    private Family? _familyToDelete;
+    private Modal? deleteFamilyModal;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
+        await RefreshFamiliesAsync();
+    }
+
+    private async Task RefreshFamiliesAsync()
+    {
         var familyAwaiter = AddressBookService.GetAllFamiliesAsync();
 
         _families = await familyAwaiter.ToListAsync();
     }
 
-    private Task OnEditFamilyClicked(ObjectId familyId)
+    private Task OnEditFamilyClickedAsync(ObjectId familyId)
     {
         NavManager.NavigateTo($"families/{familyId.ToString()}");
 
         return Task.CompletedTask;
+    }
+
+    private void OnDeleteFamilyClicked(Family family)
+    {
+        _familyToDelete = family;
+
+        deleteFamilyModal?.Show();
+    }
+
+    private async Task DeleteFamilyAsync(object obj)
+    {
+        if(_familyToDelete == null)
+        {
+            return;
+        }
+
+        deleteFamilyModal?.Hide();
+
+        // await AddressBookService.DeleteFamilyAsync(_familyToDelete.Id);
+
+        await RefreshFamiliesAsync();
+
+        _familyToDelete = null;
+    }
+
+    public void CloseDialog(object obj)
+    {
+        deleteFamilyModal?.Hide();
+
+        _familyToDelete = null;
     }
 }
