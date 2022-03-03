@@ -24,9 +24,12 @@ namespace asagiv.dbmanager.common.Models
         {
             var lines = new List<string>();
 
-            foreach(var streetLine in Street.Split('\r', '\n'))
+            if (!string.IsNullOrWhiteSpace(Street))
             {
-                lines.Add(streetLine);
+                foreach (var streetLine in Street.Split('\r', '\n'))
+                {
+                    lines.Add(streetLine);
+                }
             }
 
             if (Country == "USA")

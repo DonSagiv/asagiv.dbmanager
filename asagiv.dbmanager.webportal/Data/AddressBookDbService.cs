@@ -24,21 +24,27 @@ namespace asagiv.dbmanager.webportal.Data
         #endregion
 
         #region Methods
-        public async IAsyncEnumerable<Family> GetAllFamiliesAsync()
+        public async IAsyncEnumerable<Family> GetAllFamiliesAsync(string searchString = null)
         {
-            var familyEnumearble = _families.GetEnumerable()
+            IAsyncEnumerable<Family> familyEnumearble = _families.GetEnumerable()
                 .OrderBy(x => x.FamilyName);
+
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                familyEnumearble = familyEnumearble
+                    .Where(x => x.AddressHeader.ToLower().Contains(searchString.ToLower()));
+            }
 
             var addresses = await _addresses.ReadManyAsync();
 
-            if(addresses == null)
+            if (addresses == null)
             {
                 yield break;
             }
 
-            await foreach(var family in familyEnumearble)
+            await foreach (var family in familyEnumearble)
             {
-                if(family == null)
+                if (family == null)
                 {
                     continue;
                 }
@@ -55,7 +61,7 @@ namespace asagiv.dbmanager.webportal.Data
         {
             var family = await _families.ReadAsync(id);
 
-            if(family == null)
+            if (family == null)
             {
                 return null;
             }
@@ -71,7 +77,7 @@ namespace asagiv.dbmanager.webportal.Data
                 .AsQueryable()
                 .Where(x => x.FamilyId == id)
                 .ToListAsync();
-            
+
             family.People = people;
 
             return family;
@@ -86,12 +92,12 @@ namespace asagiv.dbmanager.webportal.Data
         {
             await _families.AppendAsync(family);
 
-            if(removedAddresses != null)
+            if (removedAddresses != null)
             {
                 await _addresses.DeleteManyAsync(removedAddresses.Select(x => x.Id).ToArray());
             }
 
-            if(removedPeople != null)
+            if (removedPeople != null)
             {
                 await _people.DeleteManyAsync(removedPeople.Select(x => x.Id).ToArray());
             }
@@ -101,7 +107,7 @@ namespace asagiv.dbmanager.webportal.Data
                 await _addresses.AppendAsync(address);
             }
 
-            foreach(var person in family.People)
+            foreach (var person in family.People)
             {
                 await _people.AppendAsync(person);
             }
