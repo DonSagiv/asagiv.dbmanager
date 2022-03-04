@@ -12,14 +12,16 @@ namespace asagiv.dbmanager.webportal.Data
         private FamilyCollection _families;
         private AddressCollection _addresses;
         private PeopleCollection _people;
+        private EventsCollection _events;
         #endregion
 
         #region Constructor
-        public AddressBookDbService(FamilyCollection families, AddressCollection addresses, PeopleCollection people)
+        public AddressBookDbService(FamilyCollection families, AddressCollection addresses, PeopleCollection people, EventsCollection events)
         {
             _families = families;
             _addresses = addresses;
             _people = people;
+            _events = events;
         }
         #endregion
 
@@ -111,6 +113,14 @@ namespace asagiv.dbmanager.webportal.Data
             {
                 await _people.AppendAsync(person);
             }
+        }
+
+        public Task<List<EventInfo>> GetAllEventsAsync()
+        {
+            return _events
+                .AsQueryable()
+                .OrderBy(x => x.EventName)
+                .ToListAsync();
         }
         #endregion
     }

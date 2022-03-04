@@ -1,0 +1,33 @@
+﻿@page "/events"
+
+@using asagiv.dbmanager.common.Models
+@using asagiv.dbmanager.webportal.Data
+@inject NavigationManager NavManager
+@inject AddressBookDbService AddressBookService
+
+<PageTitle>Events</PageTitle>
+
+<h1 class="text-center">Events</h1>
+
+@if (_events == null)
+{
+    <Text>Loading...</Text>
+}
+else
+{
+    <Select TValue="EventInfo">
+        @foreach(var eventInfo in _events)
+        {
+            <SelectItem Value="eventInfo">@eventInfo.EventName</SelectItem>
+        }
+    </Select>
+}
+
+@code {
+    IList<EventInfo>? _events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _events = await AddressBookService.GetAllEventsAsync();
+    }
+}
