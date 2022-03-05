@@ -34,10 +34,22 @@ else
                 <DataGridCommandColumn />
                 <DataGridColumn Field="Family.AddressHeader" HeaderTextAlignment="TextAlignment.Center" TextAlignment="TextAlignment.Center" Caption="From" Sortable="true" />
                 <DataGridColumn Field="EventGift.GiftDescription" HeaderTextAlignment="TextAlignment.Center" TextAlignment="TextAlignment.Center" Caption="Gift" Sortable="true" />
-                <DataGridCheckColumn Field="@nameof(FamilyEventGift.ThankYouNoteWritten)" HeaderTextAlignment="TextAlignment.Center" Caption="Thank You Note Written" Sortable="true">
+                <DataGridCheckColumn Field="@nameof(FamilyEventGift.ThankYouNoteWritten)" HeaderTextAlignment="TextAlignment.Center" Caption="TY Written" Sortable="true">
                     <DisplayTemplate>
                         <div class="text-center">
                             <Check TValue="bool" Checked="@((context as FamilyEventGift).ThankYouNoteWritten)" CheckedChanged="(b => OnThankYouNoteWrittenChanged(context, b))" />
+                        </div>
+                    </DisplayTemplate>
+                </DataGridCheckColumn>
+                <DataGridCheckColumn HeaderTextAlignment="TextAlignment.Center" Caption="Options" Sortable="false">
+                    <DisplayTemplate>
+                        <div class="text-center">
+                            <Button Padding="Padding.Is0">
+                                <Icon Name="IconName.Edit" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" />
+                            </Button>
+                            <Button Padding="Padding.Is0">
+                                <Icon Name="IconName.Delete" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" />
+                            </Button>
                         </div>
                     </DisplayTemplate>
                 </DataGridCheckColumn>
