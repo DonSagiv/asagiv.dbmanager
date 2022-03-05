@@ -18,23 +18,31 @@ else
     <Select TValue="EventInfo" SelectedValue="@_selectedEvent" SelectedValueChanged="OnSelectedEventChangedAsync">
 
         @foreach (var eventInfo in _events)
-        {
-            <SelectItem Value="eventInfo">@eventInfo.EventName</SelectItem>
-        }
+    {
+        <SelectItem Value="eventInfo">@eventInfo.EventName</SelectItem>
+    }
 
-    </Select>
+</Select>
 
-    <h2 class="text-center">Gifts</h2>
+    <h2 class="text-center m-3">Gifts</h2>
 
     if (_selectedEvent != null && _familyEventGifts != null)
     {
         <div>
-            @foreach (var familyEventGift in _familyEventGifts)
-            {
-                <div>
-                    <Text>@familyEventGift.EventGift.GiftDescription</Text>
-                </div>
-            }
+
+            <DataGrid TItem="FamilyEventGift" Data="@_familyEventGifts" Responsive PageSize="@_count">
+                <DataGridCommandColumn />
+                <DataGridColumn Field="Family.AddressHeader" HeaderTextAlignment="TextAlignment.Center" TextAlignment="TextAlignment.Center" Caption="From" Sortable="true" />
+                <DataGridColumn Field="EventGift.GiftDescription" HeaderTextAlignment="TextAlignment.Center" TextAlignment="TextAlignment.Center" Caption="Gift" Sortable="true" />
+                <DataGridCheckColumn Field="@nameof(FamilyEventGift.ThankYouNoteWritten)" HeaderTextAlignment="TextAlignment.Center" Caption="Thank You Note Written" Sortable="true">
+                    <DisplayTemplate>
+                        <div class="text-center">
+                            <Check TValue="bool" Checked="@((context as FamilyEventGift).ThankYouNoteWritten)" CheckedChanged="(b => OnThankYouNoteWrittenChanged(context, b))" />
+                        </div>
+                    </DisplayTemplate>
+                </DataGridCheckColumn>
+            </DataGrid>
+
         </div>
     }
 }
@@ -43,6 +51,7 @@ else
     IList<EventInfo>? _events;
     private EventInfo? _selectedEvent;
     private IList<FamilyEventGift>? _familyEventGifts;
+    private int _count;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,9 +68,27 @@ else
         {
             _familyEventGifts = null;
 
+            _count = 0;
+
             return;
         }
 
         _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(_selectedEvent);
+
+        _count = _familyEventGifts.Count;
+    }
+
+    private async Task OnThankYouNoteWrittenChanged(object context, bool value)
+    {
+        var selectedFamilyEventGift = context as FamilyEventGift;
+
+        if (selectedFamilyEventGift == null)
+        {
+            return;
+        }
+
+        selectedFamilyEventGift.ThankYouNoteWritten = value;
+
+        await AddressBookService.UpdateThankYouNoteWrittenAsync(selectedFamilyEventGift);
     }
 }

@@ -161,6 +161,11 @@ namespace asagiv.dbmanager.webportal.Data
 
             return familyEventGifts;
         }
+
+        public async Task UpdateThankYouNoteWrittenAsync(FamilyEventGift familyEventGift)
+        {
+            await _familyEventGifts.AppendAsync(familyEventGift);
+        }
         #endregion
     }
 }

@@ -20,7 +20,7 @@ builder.Services.AddSingleton<FamilyEventGiftCollection>();
 builder.Services.AddSingleton<AddressBookDbService>();
 
 // Implement Blazorise
-builder.Services.AddBlazorise(o => o.ChangeTextOnKeyPress = true)
+builder.Services.AddBlazorise(o => o.Immediate = true)
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
