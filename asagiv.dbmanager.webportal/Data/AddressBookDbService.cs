@@ -13,23 +13,32 @@ namespace asagiv.dbmanager.webportal.Data
         private AddressCollection _addresses;
         private PeopleCollection _people;
         private EventsCollection _events;
+        private FamilyEventGiftCollection _familyEventGifts;
+        private EventGiftCollection _eventGifts;
         #endregion
 
         #region Constructor
-        public AddressBookDbService(FamilyCollection families, AddressCollection addresses, PeopleCollection people, EventsCollection events)
+        public AddressBookDbService(FamilyCollection families,
+            AddressCollection addresses,
+            PeopleCollection people, 
+            EventsCollection events,
+            FamilyEventGiftCollection familyEventGifts,
+            EventGiftCollection eventGift)
         {
             _families = families;
             _addresses = addresses;
             _people = people;
             _events = events;
+            _familyEventGifts = familyEventGifts;
+            _eventGifts = eventGift;
         }
         #endregion
 
         #region Methods
-        public async IAsyncEnumerable<Family> GetAllFamiliesAsync(string searchString = null)
+        public async IAsyncEnumerable<Family> GetAllFamiliesAsync(string? searchString = null)
         {
-            IAsyncEnumerable<Family> familyEnumearble = _families.GetEnumerable()
-                .OrderBy(x => x.FamilyName);
+            IAsyncEnumerable<Family?> familyEnumearble = _families.GetEnumerable()
+                .OrderBy(x => x?.FamilyName);
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {
@@ -52,7 +61,7 @@ namespace asagiv.dbmanager.webportal.Data
                 }
 
                 family.Addresses = addresses
-                    .Where(x => x.FamilyId == family.Id)
+                    .Where(x => x?.FamilyId == family.Id)
                     .ToList();
 
                 yield return family;
@@ -121,6 +130,36 @@ namespace asagiv.dbmanager.webportal.Data
                 .AsQueryable()
                 .OrderBy(x => x.EventName)
                 .ToListAsync();
+        }
+
+        public async Task<List<FamilyEventGift>> GetFamilyEventGiftsAsync(EventInfo eventInfo)
+        {
+            var familyEventGifts = await _familyEventGifts
+                .AsQueryable()
+                .Where(x => x.EventId == eventInfo.Id)
+                .ToListAsync();
+
+            var giftIds = familyEventGifts.Select(x => x.GiftId).ToList();
+            var familyIds = familyEventGifts.Select(x => x.FamilyId).ToList();
+
+            var gifts = await _eventGifts
+                .AsQueryable()
+                .Where(x => giftIds.Contains(x.Id))
+                .ToListAsync();
+
+            var families = await _families
+                .AsQueryable()
+                .Where(x => familyIds.Contains(x.Id))
+                .ToListAsync();
+
+            foreach(var familyEventGift in familyEventGifts)
+            {
+                familyEventGift.EventInfo = eventInfo;
+                familyEventGift.Family = families.FirstOrDefault(x => x.Id == familyEventGift.FamilyId);
+                familyEventGift.EventGift = gifts.FirstOrDefault(x => x.Id == familyEventGift.GiftId);
+            }
+
+            return familyEventGifts;
         }
         #endregion
     }

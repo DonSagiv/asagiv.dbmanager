@@ -15,6 +15,8 @@ builder.Services.AddSingleton<FamilyCollection>();
 builder.Services.AddSingleton<AddressCollection>();
 builder.Services.AddSingleton<PeopleCollection>();
 builder.Services.AddSingleton<EventsCollection>();
+builder.Services.AddSingleton<EventGiftCollection>();
+builder.Services.AddSingleton<FamilyEventGiftCollection>();
 builder.Services.AddSingleton<AddressBookDbService>();
 
 // Implement Blazorise
