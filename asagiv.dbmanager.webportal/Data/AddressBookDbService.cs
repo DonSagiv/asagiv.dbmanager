@@ -186,6 +186,19 @@ namespace asagiv.dbmanager.webportal.Data
         {
             await _familyEventGifts.AppendAsync(familyEventGift);
         }
+
+        public Task<EventGift?> GetGiftAsync(ObjectId id)
+        {
+            return _eventGifts.ReadAsync(id);
+        }
+
+        public Task<List<FamilyEventGift>> GetFamilyEventGiftsAsync(ObjectId eventGiftId)
+        {
+            return _familyEventGifts
+                .AsQueryable()
+                .Where(x => x.GiftId == eventGiftId)
+                .ToListAsync();
+        }
         #endregion
     }
 }

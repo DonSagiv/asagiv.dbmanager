@@ -1,0 +1,61 @@
+﻿@page "/events/{eventIdString}/gifts/{eventGiftIdString}"
+
+@using MongoDB.Bson
+@using asagiv.dbmanager.common.Models
+@using asagiv.dbmanager.webportal.Data
+@inject NavigationManager NavManager
+@inject AddressBookDbService AddressBookService
+
+<PageTitle>Gift Information</PageTitle>
+
+<h1 class="text-center">Gift Information</h1>
+
+@if (_eventGift == null)
+{
+    <div>
+        <Text>Loading...</Text>
+    </div>
+}
+else
+{
+    <div>
+        <Text>@_eventGift.GiftDescription</Text>
+
+        @foreach(var familyEventGift in _familyEventGifts)
+        {
+            <div>
+                <Text>@familyEventGift.FamilyId.ToString()</Text>
+            </div>
+        }
+    </div>
+    
+}
+
+@code {
+    [Parameter]
+    public string? eventIdString { get; set; }
+    [Parameter]
+    public string? eventGiftIdString { get; set; }
+    public ObjectId _eventId;
+    private EventGift? _eventGift;
+    private IList<FamilyEventGift>? _familyEventGifts;
+    private IList<FamilyEventGift>? _removedFamilyEventGifts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _removedFamilyEventGifts = new List<FamilyEventGift>();
+
+        var isEventValid = !ObjectId.TryParse(eventIdString, out _eventId);
+
+        if(eventGiftIdString == "new")
+        {
+            _eventGift = new EventGift();
+            _familyEventGifts = new List<FamilyEventGift>();
+        }
+        else if(ObjectId.TryParse(eventGiftIdString, out var eventGiftId))
+        {
+            _eventGift = await AddressBookService.GetGiftAsync(eventGiftId);
+            _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(eventGiftId);
+        }
+    }
+}

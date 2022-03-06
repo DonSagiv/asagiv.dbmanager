@@ -45,10 +45,7 @@ else
                     <DisplayTemplate>
                         <div class="text-center">
                             <Button Padding="Padding.Is0">
-                                <Icon Name="IconName.Edit" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" />
-                            </Button>
-                            <Button Padding="Padding.Is0">
-                                <Icon Name="IconName.Delete" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" />
+                                <Icon Name="IconName.Edit" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" Clicked="(() => OnEditGiftClicked(context))" />
                             </Button>
                         </div>
                     </DisplayTemplate>
@@ -102,5 +99,17 @@ else
         selectedFamilyEventGift.ThankYouNoteWritten = value;
 
         await AddressBookService.UpdateThankYouNoteWrittenAsync(selectedFamilyEventGift);
+    }
+
+    public void OnEditGiftClicked(object context)
+    {
+        var selectedFamilyEventGift = context as FamilyEventGift;
+
+        if (selectedFamilyEventGift == null)
+        {
+            return;
+        }
+
+        NavManager.NavigateTo($"events/{_selectedEvent?.Id}/gifts/{selectedFamilyEventGift?.GiftId}");
     }
 }
