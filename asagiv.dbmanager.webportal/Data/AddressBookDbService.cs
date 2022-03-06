@@ -96,6 +96,24 @@ namespace asagiv.dbmanager.webportal.Data
 
         public async Task DeleteFamilyAsync(ObjectId id)
         {
+            // Cascade delete people
+            var peopleToDelete = await _people
+                .AsQueryable()
+                .Where(x => x.FamilyId == id)
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            await _people.DeleteManyAsync(peopleToDelete.ToArray());
+
+            // Cascade delete addresses
+            var addressesToDelete = await _addresses
+                .AsQueryable()
+                .Where(x => x.FamilyId == id)
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            await _addresses.DeleteManyAsync(addressesToDelete.ToArray());
+
             await _families.DeleteAsync(id);
         }
 
@@ -103,6 +121,7 @@ namespace asagiv.dbmanager.webportal.Data
         {
             await _families.AppendAsync(family);
 
+            // Delete removed addresses and people.
             if (removedAddresses != null)
             {
                 await _addresses.DeleteManyAsync(removedAddresses.Select(x => x.Id).ToArray());
@@ -113,6 +132,7 @@ namespace asagiv.dbmanager.webportal.Data
                 await _people.DeleteManyAsync(removedPeople.Select(x => x.Id).ToArray());
             }
 
+            // Add new addresses and people.
             foreach (var address in family.Addresses)
             {
                 await _addresses.AppendAsync(address);
