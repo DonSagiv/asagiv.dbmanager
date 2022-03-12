@@ -18,17 +18,54 @@
 }
 else
 {
-    <div>
-        <Text>@_eventGift.GiftDescription</Text>
+    <div class="m-4">
 
-        @foreach(var familyEventGift in _familyEventGifts)
+        <CardDeck>
+            <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
+
+                <Div Margin="Margin.Is3">
+
+                    <Fields>
+                        <Field Margin="Margin.Is4">
+                            <FieldLabel>Gift Description</FieldLabel>
+                            <TextEdit Size="Size.ExtraLarge" @bind-Text="@_eventGift.GiftDescription" />
+                        </Field>
+                    </Fields>
+
+                    <Fields>
+                        <Field Margin="Margin.Is4">
+                            <FieldLabel>Notes</FieldLabel>
+                            <MemoEdit @bind-Text="@_eventGift.Notes" />
+                        </Field>
+                    </Fields>
+
+                </Div>
+
+            </Card>
+        </CardDeck>
+
+        <div>
+            <Button Color="Color.Secondary" Clicked="AddNewFamily" Margin="Margin.Is2.OnY">Add Family</Button>
+        </div>
+
+        @foreach (var familyEventGift in _familyEventGifts)
         {
-            <div>
-                <Text>@familyEventGift.FamilyId.ToString()</Text>
-            </div>
+            <CardDeck>
+                <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
+
+                    <Select TValue="Family" SelectedValue="@familyEventGift.Family">
+                        @foreach (var family in _families)
+                    {
+                        <SelectItem Value="family">@family.AddressHeader</SelectItem>
+                    }
+                </Select>
+
+            </Card>
+        </CardDeck>
         }
+
     </div>
-    
+
 }
 
 @code {
@@ -40,6 +77,7 @@ else
     private EventGift? _eventGift;
     private IList<FamilyEventGift>? _familyEventGifts;
     private IList<FamilyEventGift>? _removedFamilyEventGifts;
+    private IList<Family>? _families;
 
     protected override async Task OnInitializedAsync()
     {
@@ -47,15 +85,30 @@ else
 
         var isEventValid = !ObjectId.TryParse(eventIdString, out _eventId);
 
-        if(eventGiftIdString == "new")
+        _families = await AddressBookService.GetAllFamiliesAsync().ToListAsync();
+
+        if (eventGiftIdString == "new")
         {
             _eventGift = new EventGift();
             _familyEventGifts = new List<FamilyEventGift>();
+
+            AddNewFamily();
         }
-        else if(ObjectId.TryParse(eventGiftIdString, out var eventGiftId))
+        else if (ObjectId.TryParse(eventGiftIdString, out var eventGiftId))
         {
             _eventGift = await AddressBookService.GetGiftAsync(eventGiftId);
             _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(eventGiftId);
         }
+    }
+
+    public void AddNewFamily()
+    {
+        var newFamilyEventGift = new FamilyEventGift
+            {
+                EventId = _eventId,
+                GiftId = _eventGift?.Id ?? ObjectId.Empty
+            };
+
+        _familyEventGifts?.Add(newFamilyEventGift);
     }
 }

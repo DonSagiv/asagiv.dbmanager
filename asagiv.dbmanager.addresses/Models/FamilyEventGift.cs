@@ -6,6 +6,9 @@ namespace asagiv.dbmanager.common.Models
 {
     public class FamilyEventGift : MongoDbModelBase
     {
+        private Family family;
+        private EventInfo eventInfo;
+        private EventGift eventGift;
         #region Properties
         public ObjectId FamilyId { get; set; }
         public ObjectId EventId { get; set; }
@@ -13,11 +16,35 @@ namespace asagiv.dbmanager.common.Models
         public bool ThankYouNoteWritten { get; set; }
         public string Notes { get; set; }
         [BsonIgnore]
-        public Family Family { get; set; }
+        public Family Family
+        {
+            get => family;
+            set
+            {
+                family = value;
+                FamilyId = family?.Id ?? ObjectId.Empty;
+            }
+        }
         [BsonIgnore]
-        public EventInfo EventInfo { get; set; }
+        public EventInfo EventInfo 
+        {
+            get => eventInfo;
+            set
+            {
+                eventInfo = value;
+                EventId = eventInfo?.Id ?? ObjectId.Empty;
+            }
+        }
         [BsonIgnore]
-        public EventGift EventGift { get; set; }
+        public EventGift EventGift 
+        {
+            get => eventGift;
+            set 
+            {
+                eventGift = value; 
+                GiftId = eventGift?.Id ?? ObjectId.Empty;
+            } 
+        }
         #endregion
 
         #region Constructor

@@ -16,13 +16,11 @@
 else
 {
     <Select TValue="EventInfo" SelectedValue="@_selectedEvent" SelectedValueChanged="OnSelectedEventChangedAsync">
-
-        @foreach (var eventInfo in _events)
+    @foreach (var eventInfo in _events)
     {
         <SelectItem Value="eventInfo">@eventInfo.EventName</SelectItem>
     }
-
-</Select>
+    </Select>
 
     <h2 class="text-center m-3">Gifts</h2>
 
