@@ -8,9 +8,7 @@
 
 <PageTitle>Gift Information</PageTitle>
 
-<h1 class="text-center">Gift Information</h1>
-
-@if (_eventGift == null)
+@if (_eventGift == null || _families == null)
 {
     <div>
         <Text>Loading...</Text>
@@ -20,11 +18,12 @@ else
 {
     <div class="m-4">
 
+        <h1 class="text-center">Gift Information</h1>
+
         <CardDeck>
             <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
 
                 <Div Margin="Margin.Is3">
-
                     <Fields>
                         <Field Margin="Margin.Is4">
                             <FieldLabel>Gift Description</FieldLabel>
@@ -44,28 +43,55 @@ else
             </Card>
         </CardDeck>
 
-        <div>
-            <Button Color="Color.Secondary" Clicked="AddNewFamily" Margin="Margin.Is2.OnY">Add Family</Button>
-        </div>
-
-        @foreach (var familyEventGift in _familyEventGifts)
+        @if (_familyEventGifts == null)
         {
-            <CardDeck>
-                <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
-
-                    <Select TValue="Family" SelectedValue="@familyEventGift.Family">
-                        @foreach (var family in _families)
-                    {
-                        <SelectItem Value="family">@family.AddressHeader</SelectItem>
-                    }
-                </Select>
-
-            </Card>
-        </CardDeck>
+            <div>
+                <Text>
+                    Loading
+                </Text>
+            </div>
         }
+        else
+        {
+            <h2 class="text-center m-3">Benfactors</h2>
 
+            <div>
+                <Button Color="Color.Secondary" Clicked="AddNewFamily" Margin="Margin.Is3.OnY">Add Benfactor</Button>
+            </div>
+
+            <div>
+                @foreach (var familyEventGift in _familyEventGifts)
+                {
+                    <CardDeck>
+                        <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
+
+                            <Div Margin="Margin.Is3">
+
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        <Select TValue="string" SelectedValue="@familyEventGift.Family?.Id.ToString()" SelectedValueChanged="(x => OnFamilyChanged(x.ToString(), familyEventGift))">
+                                            <SelectItem TValue="string" Value="null">--- Select A Family ---</SelectItem>
+                                            @foreach (var family in _families)
+                                            {
+                                                <SelectItem TValue="string" Value="family.Id.ToString()">@family.AddressHeader</SelectItem>
+                                            }
+                                        </Select>
+                                    </Addon>
+                                    <Addon AddonType="AddonType.End">
+                                        <Button>
+                                            <Icon Name="IconName.Delete" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" />
+                                        </Button>
+                                    </Addon>
+                                </Addons>
+
+                            </Div>
+
+                        </Card>
+                    </CardDeck>
+                }
+            </div>
+        }
     </div>
-
 }
 
 @code {
@@ -97,7 +123,7 @@ else
         else if (ObjectId.TryParse(eventGiftIdString, out var eventGiftId))
         {
             _eventGift = await AddressBookService.GetGiftAsync(eventGiftId);
-            _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(eventGiftId);
+            _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(_eventId, eventGiftId);
         }
     }
 
@@ -105,10 +131,31 @@ else
     {
         var newFamilyEventGift = new FamilyEventGift
             {
+                Family = new Family(),
                 EventId = _eventId,
                 GiftId = _eventGift?.Id ?? ObjectId.Empty
             };
 
         _familyEventGifts?.Add(newFamilyEventGift);
+    }
+
+    public void OnFamilyChanged(string familyIdString, FamilyEventGift familyEventGift)
+    {
+        if (familyEventGift == null)
+        {
+            return;
+        }
+
+        if (!ObjectId.TryParse(familyIdString, out ObjectId familyId))
+        {
+            familyEventGift.Family = null;
+
+            return;
+        }
+
+        var family = _families
+            ?.FirstOrDefault(x => x.Id == familyId);
+
+        familyEventGift.Family = family;
     }
 }

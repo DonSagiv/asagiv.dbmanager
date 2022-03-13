@@ -60,7 +60,7 @@ using(var reader = new StreamReader(@"C:\Users\DonSa\Desktop\PgBackup\Addresses\
         // address.FamilyId = families.First(x => x.OldFamilyId == address.OldFamilyId).Id;
     }
 
-    addressesCollection.InsertMany(addresses);
+    addressesCollection?.InsertMany(addresses);
 }
 
 // Import people
@@ -76,7 +76,7 @@ using (var reader = new StreamReader(@"C:\Users\DonSa\Desktop\PgBackup\People\_P
         // person.FamilyId = families.First(x => x.OldFamilyId == person.OldFamilyId).Id;
     }
 
-    peopleCollection.InsertMany(people);
+    peopleCollection?.InsertMany(people);
 }
 
 // Import Gifts
@@ -87,7 +87,7 @@ using (var reader = new StreamReader(@"C:\Users\DonSa\Desktop\PgBackup\BabyGifts
     csv.Context.RegisterClassMap<ClassMapEventGift>();
     eventGifts = csv.GetRecords<EventGift>().ToArray();
 
-    eventGiftCollection.InsertMany(eventGifts);
+    eventGiftCollection?.InsertMany(eventGifts);
  }
 
 // Import Joined Family-Event-Gifts
@@ -105,7 +105,7 @@ using (var reader = new StreamReader(@"C:\Users\DonSa\Desktop\PgBackup\FamilyBab
         // familyEventGift.GiftId = eventGifts.First(x => x.OldGiftId == familyEventGift.OldGiftId).Id;
     }
 
-    familyEventGiftCollection.InsertMany(familyEventGifts);
+    familyEventGiftCollection?.InsertMany(familyEventGifts);
 }
 
 Console.ReadLine();

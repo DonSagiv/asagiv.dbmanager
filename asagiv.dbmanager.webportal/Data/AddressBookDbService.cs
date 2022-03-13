@@ -9,12 +9,12 @@ namespace asagiv.dbmanager.webportal.Data
     public class AddressBookDbService
     {
         #region Fields
-        private FamilyCollection _families;
-        private AddressCollection _addresses;
-        private PeopleCollection _people;
-        private EventsCollection _events;
-        private FamilyEventGiftCollection _familyEventGifts;
-        private EventGiftCollection _eventGifts;
+        private readonly FamilyCollection _families;
+        private readonly AddressCollection _addresses;
+        private readonly PeopleCollection _people;
+        private readonly EventsCollection _events;
+        private readonly FamilyEventGiftCollection _familyEventGifts;
+        private readonly EventGiftCollection _eventGifts;
         #endregion
 
         #region Constructor
@@ -192,12 +192,64 @@ namespace asagiv.dbmanager.webportal.Data
             return _eventGifts.ReadAsync(id);
         }
 
-        public Task<List<FamilyEventGift>> GetFamilyEventGiftsAsync(ObjectId eventGiftId)
+        public async Task<List<FamilyEventGift>> GetFamilyEventGiftsAsync(ObjectId eventId)
         {
-            return _familyEventGifts
+            var familyEventGifts = await _familyEventGifts
                 .AsQueryable()
-                .Where(x => x.GiftId == eventGiftId)
+                .Where(x => x.EventId == eventId)
                 .ToListAsync();
+
+            var familyIds = familyEventGifts
+                .Select(x => x.FamilyId);
+
+            var families = await _families
+                .AsQueryable()
+                .Where(x => familyIds.Contains(x.Id))
+                .ToListAsync();
+
+            var giftIds = familyEventGifts
+                .Select(x => x.GiftId);
+
+            var gifts = await _eventGifts
+                .AsQueryable()
+                .Where(x => giftIds.Contains(x.Id))
+                .ToListAsync();
+
+            foreach(var familyEventGift in familyEventGifts)
+            {
+                familyEventGift.Family = families
+                    .FirstOrDefault(x => x.Id == familyEventGift.FamilyId);
+
+                familyEventGift.EventGift = gifts
+                    .FirstOrDefault(x => x.Id == familyEventGift.GiftId);
+            }
+
+            return familyEventGifts;
+        }
+
+        public async Task<List<FamilyEventGift>> GetFamilyEventGiftsAsync(ObjectId eventId, ObjectId giftId)
+        {
+            var familyEventGifts = await _familyEventGifts
+                .AsQueryable()
+                .Where(x => x.EventId == eventId)
+                .Where(x => x.GiftId == giftId)
+                .ToListAsync();
+
+            var familyIds = familyEventGifts
+                .Select(x => x.FamilyId);
+
+            var families = await _families
+                .AsQueryable()
+                .Where(x => familyIds.Contains(x.Id))
+                .ToListAsync();
+
+            foreach (var familyEventGift in familyEventGifts)
+            {
+                familyEventGift.Family = families
+                    .FirstOrDefault(x => x.Id == familyEventGift.FamilyId);
+            }
+
+            return familyEventGifts;
         }
         #endregion
     }

@@ -1,5 +1,6 @@
 ﻿@page "/events"
 
+@using MongoDB.Bson
 @using asagiv.dbmanager.common.Models
 @using asagiv.dbmanager.webportal.Data
 @inject NavigationManager NavManager
@@ -15,17 +16,18 @@
 }
 else
 {
-    <Select TValue="EventInfo" SelectedValue="@_selectedEvent" SelectedValueChanged="OnSelectedEventChangedAsync">
-    @foreach (var eventInfo in _events)
-    {
-        <SelectItem Value="eventInfo">@eventInfo.EventName</SelectItem>
-    }
+    <Select TValue="string" SelectedValue="@_selectedEvent" SelectedValueChanged="OnSelectedEventChangedAsync">
+        <SelectItem TValue="string" Value="null">--- Select an Event ---</SelectItem>
+        @foreach (var eventInfo in _events)
+        {
+            <SelectItem TValue="string" Value="eventInfo.Id.ToString()">@eventInfo.EventName</SelectItem>
+        }
     </Select>
-
-    <h2 class="text-center m-3">Gifts</h2>
 
     if (_selectedEvent != null && _familyEventGifts != null)
     {
+        <h2 class="text-center m-3">Gifts</h2>
+
         <div>
 
             <DataGrid TItem="FamilyEventGift" Data="@_familyEventGifts" Responsive PageSize="@_count">
@@ -56,22 +58,20 @@ else
 
 @code {
     IList<EventInfo>? _events;
-    private EventInfo? _selectedEvent;
+    private string _selectedEvent;
     private IList<FamilyEventGift>? _familyEventGifts;
     private int _count;
 
     protected override async Task OnInitializedAsync()
     {
         _events = await AddressBookService.GetAllEventsAsync();
-
-        await OnSelectedEventChangedAsync(_events.FirstOrDefault());
     }
 
-    private async Task OnSelectedEventChangedAsync(EventInfo? selectedEvent)
+    private async Task OnSelectedEventChangedAsync(string newInputObject)
     {
-        _selectedEvent = selectedEvent;
+        _selectedEvent = newInputObject;
 
-        if (_selectedEvent == null)
+        if (!ObjectId.TryParse(_selectedEvent, out ObjectId eventId))
         {
             _familyEventGifts = null;
 
@@ -80,7 +80,7 @@ else
             return;
         }
 
-        _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(_selectedEvent);
+        _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(eventId);
 
         _count = _familyEventGifts.Count;
     }
@@ -108,6 +108,6 @@ else
             return;
         }
 
-        NavManager.NavigateTo($"events/{_selectedEvent?.Id}/gifts/{selectedFamilyEventGift?.GiftId}");
+        NavManager.NavigateTo($"events/{_selectedEvent}/gifts/{selectedFamilyEventGift?.GiftId}");
     }
 }
