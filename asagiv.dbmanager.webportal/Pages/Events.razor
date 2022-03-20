@@ -1,4 +1,5 @@
 ﻿@page "/events"
+@page "/events/{eventIdString}"
 
 @using MongoDB.Bson
 @using asagiv.dbmanager.common.Models
@@ -17,12 +18,12 @@
 else
 {
     <Select TValue="string" SelectedValue="@_selectedEvent" SelectedValueChanged="OnSelectedEventChangedAsync">
-        <SelectItem TValue="string" Value="null">--- Select an Event ---</SelectItem>
+        <SelectItem TValue="string" Value="@string.Empty">--- Select an Event ---</SelectItem>
         @foreach (var eventInfo in _events)
-        {
-            <SelectItem TValue="string" Value="eventInfo.Id.ToString()">@eventInfo.EventName</SelectItem>
-        }
-    </Select>
+    {
+        <SelectItem TValue="string" Value="eventInfo.Id.ToString()">@eventInfo.EventName</SelectItem>
+    }
+</Select>
 
     if (_selectedEvent != null && _familyEventGifts != null)
     {
@@ -57,6 +58,9 @@ else
 }
 
 @code {
+    [Parameter]
+    public string eventIdString { get; set; }
+
     IList<EventInfo>? _events;
     private string _selectedEvent;
     private IList<FamilyEventGift>? _familyEventGifts;
@@ -65,17 +69,43 @@ else
     protected override async Task OnInitializedAsync()
     {
         _events = await AddressBookService.GetAllEventsAsync();
+
+        if(eventIdString != null)
+        {
+            await OnSelectedEventChangedAsync(eventIdString);
+        }
     }
 
     private async Task OnSelectedEventChangedAsync(string newInputObject)
     {
-        _selectedEvent = newInputObject;
+        if (string.IsNullOrWhiteSpace(newInputObject))
+        {
+            NavManager.NavigateTo($"/events");
+
+            ClearEventData();
+        }
+        else
+        {
+            NavManager.NavigateTo($"/events/{newInputObject}");
+
+            await LoadEventDataAsync(newInputObject);
+        }
+    }
+
+    private void ClearEventData()
+    {
+        _familyEventGifts = null;
+
+        _count = 0;
+    }
+
+    private async Task LoadEventDataAsync(string eventIdString)
+    {
+        _selectedEvent = eventIdString;
 
         if (!ObjectId.TryParse(_selectedEvent, out ObjectId eventId))
         {
-            _familyEventGifts = null;
-
-            _count = 0;
+            ClearEventData();
 
             return;
         }
