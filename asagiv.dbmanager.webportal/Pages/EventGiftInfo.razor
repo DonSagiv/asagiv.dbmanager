@@ -67,22 +67,22 @@ else
 
                             <Div Margin="Margin.Is3">
 
-                                <Addons>
-                                    <Addon AddonType="AddonType.Body">
-                                        <Select TValue="string" SelectedValue="@familyEventGift.Family?.Id.ToString()" SelectedValueChanged="(x => OnFamilyChanged(x.ToString(), familyEventGift))">
-                                            <SelectItem TValue="string" Value="null">--- Select A Family ---</SelectItem>
-                                            @foreach (var family in _families)
-                                            {
-                                                <SelectItem TValue="string" Value="family.Id.ToString()">@family.AddressHeader</SelectItem>
-                                            }
-                                        </Select>
-                                    </Addon>
-                                    <Addon AddonType="AddonType.End">
-                                        <Button>
-                                            <Icon Name="IconName.Delete" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" />
-                                        </Button>
-                                    </Addon>
-                                </Addons>
+                                <Autocomplete TItem="Family"
+                                  TValue="string"
+                                  Data="@_families"
+                                  TextField="@((item) => item.AddressHeader)"
+                                  ValueField="@((item) => item.Id.ToString())"
+                                  Placeholder="Select Family"
+                                  SelectedValue="@familyEventGift.Family?.Id.ToString()"
+                                  SelectedValueChanged="(x => OnFamilyChanged(x?.ToString(), familyEventGift))"
+                                  FreeTyping
+                                  Filter="AutocompleteFilter.Contains">
+                                    <NotFoundContent> Not found </NotFoundContent>
+                                </Autocomplete>
+
+                                <Button>
+                                    <Icon Name="IconName.Delete" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" />
+                                </Button>
 
                             </Div>
 
