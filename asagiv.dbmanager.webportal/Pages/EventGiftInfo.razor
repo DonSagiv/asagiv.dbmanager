@@ -68,15 +68,15 @@ else
                             <Div Margin="Margin.Is3">
 
                                 <Autocomplete TItem="Family"
-                                  TValue="string"
-                                  Data="@_families"
-                                  TextField="@((item) => item.AddressHeader)"
-                                  ValueField="@((item) => item.Id.ToString())"
-                                  Placeholder="Select Family"
-                                  SelectedValue="@familyEventGift.Family?.Id.ToString()"
-                                  SelectedValueChanged="(x => OnFamilyChanged(x?.ToString(), familyEventGift))"
-                                  FreeTyping
-                                  Filter="AutocompleteFilter.Contains">
+                                    TValue="string"
+                                    Data="@_families"
+                                    TextField="@((item) => item.AddressHeader)"
+                                    ValueField="@((item) => item.Id.ToString())"
+                                    Placeholder="Select Family"
+                                    SelectedValue="@familyEventGift.Family?.Id.ToString()"
+                                    SelectedValueChanged="(x => OnFamilyChanged(x?.ToString(), familyEventGift))"
+                                    FreeTyping
+                                    Filter="AutocompleteFilter.Contains">
                                     <NotFoundContent> Not found </NotFoundContent>
                                 </Autocomplete>
 
@@ -90,6 +90,8 @@ else
                     </CardDeck>
                 }
             </div>
+
+            <Button Color="Color.Primary" Clicked="SaveEventGiftAsync" Margin="Margin.Is3.OnY">Save Event Gift</Button>
         }
     </div>
 }
@@ -157,5 +159,12 @@ else
             ?.FirstOrDefault(x => x.Id == familyId);
 
         familyEventGift.Family = family;
+    }
+
+    public async Task SaveEventGiftAsync()
+    {
+        await AddressBookService.SaveFamilyEventGiftAsync(_eventGift, _familyEventGifts, _removedFamilyEventGifts);
+
+        NavManager.NavigateTo($"/events/{eventIdString}");
     }
 }

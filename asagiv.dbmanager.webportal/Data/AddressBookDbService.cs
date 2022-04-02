@@ -251,6 +251,19 @@ namespace asagiv.dbmanager.webportal.Data
 
             return familyEventGifts;
         }
+
+        public async Task SaveFamilyEventGiftAsync(EventGift eventGift, IEnumerable<FamilyEventGift> familyEventGifts, IEnumerable<FamilyEventGift> removedFamilyEventGifts)
+        {
+            await _eventGifts.AppendAsync(eventGift);
+            
+            await _familyEventGifts.DeleteManyAsync(removedFamilyEventGifts
+                .Select(x => x.Id).ToArray());
+
+            foreach(var familyEventGift in familyEventGifts)
+            {
+                await _familyEventGifts.AppendAsync(familyEventGift);
+            }
+        }
         #endregion
     }
 }
