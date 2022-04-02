@@ -26,7 +26,7 @@ namespace asagiv.dbmanager.common.Models
             }
         }
         [BsonIgnore]
-        public EventInfo EventInfo 
+        public EventInfo EventInfo
         {
             get => eventInfo;
             set
@@ -36,14 +36,14 @@ namespace asagiv.dbmanager.common.Models
             }
         }
         [BsonIgnore]
-        public EventGift EventGift 
+        public EventGift EventGift
         {
             get => eventGift;
-            set 
+            set
             {
-                eventGift = value; 
+                eventGift = value;
                 GiftId = eventGift?.Id ?? ObjectId.Empty;
-            } 
+            }
         }
         #endregion
 

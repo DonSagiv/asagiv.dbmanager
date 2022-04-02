@@ -20,7 +20,7 @@ namespace asagiv.dbmanager.webportal.Data
         #region Constructor
         public AddressBookDbService(FamilyCollection families,
             AddressCollection addresses,
-            PeopleCollection people, 
+            PeopleCollection people,
             EventsCollection events,
             FamilyEventGiftCollection familyEventGifts,
             EventGiftCollection eventGift)
@@ -43,7 +43,7 @@ namespace asagiv.dbmanager.webportal.Data
             if (!string.IsNullOrWhiteSpace(searchString))
             {
                 familyEnumearble = familyEnumearble
-                    .Where(x => x.AddressHeader.ToLower().Contains(searchString.ToLower()));
+                    .Where(x => x?.AddressHeader.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false);
             }
 
             var addresses = await _addresses.ReadManyAsync();
@@ -159,8 +159,8 @@ namespace asagiv.dbmanager.webportal.Data
                 .Where(x => x.EventId == eventInfo.Id)
                 .ToListAsync();
 
-            var giftIds = familyEventGifts.Select(x => x.GiftId).ToList();
-            var familyIds = familyEventGifts.Select(x => x.FamilyId).ToList();
+            var giftIds = familyEventGifts.ConvertAll(x => x.GiftId);
+            var familyIds = familyEventGifts.ConvertAll(x => x.FamilyId);
 
             var gifts = await _eventGifts
                 .AsQueryable()
@@ -175,8 +175,8 @@ namespace asagiv.dbmanager.webportal.Data
             foreach(var familyEventGift in familyEventGifts)
             {
                 familyEventGift.EventInfo = eventInfo;
-                familyEventGift.Family = families.FirstOrDefault(x => x.Id == familyEventGift.FamilyId);
-                familyEventGift.EventGift = gifts.FirstOrDefault(x => x.Id == familyEventGift.GiftId);
+                familyEventGift.Family = families.Find(x => x.Id == familyEventGift.FamilyId);
+                familyEventGift.EventGift = gifts.Find(x => x.Id == familyEventGift.GiftId);
             }
 
             return familyEventGifts;
@@ -218,10 +218,10 @@ namespace asagiv.dbmanager.webportal.Data
             foreach(var familyEventGift in familyEventGifts)
             {
                 familyEventGift.Family = families
-                    .FirstOrDefault(x => x.Id == familyEventGift.FamilyId);
+                    .Find(x => x.Id == familyEventGift.FamilyId);
 
                 familyEventGift.EventGift = gifts
-                    .FirstOrDefault(x => x.Id == familyEventGift.GiftId);
+                    .Find(x => x.Id == familyEventGift.GiftId);
             }
 
             return familyEventGifts;
@@ -246,7 +246,7 @@ namespace asagiv.dbmanager.webportal.Data
             foreach (var familyEventGift in familyEventGifts)
             {
                 familyEventGift.Family = families
-                    .FirstOrDefault(x => x.Id == familyEventGift.FamilyId);
+                    .Find(x => x.Id == familyEventGift.FamilyId);
             }
 
             return familyEventGifts;
@@ -255,7 +255,7 @@ namespace asagiv.dbmanager.webportal.Data
         public async Task SaveFamilyEventGiftAsync(EventGift eventGift, IEnumerable<FamilyEventGift> familyEventGifts, IEnumerable<FamilyEventGift> removedFamilyEventGifts)
         {
             await _eventGifts.AppendAsync(eventGift);
-            
+        
             await _familyEventGifts.DeleteManyAsync(removedFamilyEventGifts
                 .Select(x => x.Id).ToArray());
 
@@ -263,6 +263,11 @@ namespace asagiv.dbmanager.webportal.Data
             {
                 await _familyEventGifts.AppendAsync(familyEventGift);
             }
+        }
+
+        public async Task AppendEventAsync(EventInfo eventInfo)
+        {
+            await _events.AppendAsync(eventInfo);
         }
         #endregion
     }

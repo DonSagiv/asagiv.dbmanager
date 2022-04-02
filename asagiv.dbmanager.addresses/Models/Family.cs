@@ -16,7 +16,7 @@ namespace asagiv.dbmanager.common.Models
         #endregion
 
         #region Constructor
-        public Family() 
+        public Family()
         {
             Addresses = new List<Address>();
             People = new List<Person>();

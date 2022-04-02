@@ -26,7 +26,13 @@ else
             </ModalHeader>
             <ModalBody>
                 <Field>
-                    <TextEdit PlaceHolder="Event Name"/>
+                    <TextEdit @ref="_modalEventNameEdit" PlaceHolder="Event Name" />
+                </Field>
+                <Field>
+                    <MemoEdit @ref="_modalEventDescriptionEdit" PlaceHolder="Description" />
+                </Field>
+                <Field>
+                    <DateEdit TValue="DateTime?" @ref="_modalDateTimeEdit" />
                 </Field>
             </ModalBody>
             <ModalFooter>
@@ -46,7 +52,7 @@ else
     {
         <SelectItem TValue="string" Value="eventInfo.Id.ToString()">@eventInfo.EventName</SelectItem>
     }
-    </Select>
+</Select>
 
     if (_selectedEvent != null && _familyEventGifts != null)
     {
@@ -83,7 +89,10 @@ else
 @code {
     [Parameter]
     public string eventIdString { get; set; }
-    private Modal _eventNameModal;
+    private Modal? _eventNameModal;
+    private TextEdit? _modalEventNameEdit;
+    private MemoEdit? _modalEventDescriptionEdit;
+    private DateEdit<DateTime?>? _modalDateTimeEdit;
     IList<EventInfo>? _events;
     private string _selectedEvent;
     private IList<FamilyEventGift>? _familyEventGifts;
@@ -106,7 +115,20 @@ else
 
     public async Task OnModalOkClickedAsync()
     {
-        _eventNameModal.Hide();
+        var eventInfo = new EventInfo
+            {
+                EventName = _modalEventNameEdit.Text,
+                EventDate = _modalDateTimeEdit.Date,
+                Description = _modalEventDescriptionEdit.Text
+            };
+
+        await AddressBookService.AppendEventAsync(eventInfo);
+
+        _events = await AddressBookService.GetAllEventsAsync();
+
+        await OnSelectedEventChangedAsync(eventInfo.Id.ToString());
+
+        await _eventNameModal.Hide();
     }
 
     public void OnModalCancelClicked()

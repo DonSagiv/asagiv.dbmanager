@@ -3,7 +3,7 @@ using System;
 
 namespace asagiv.dbmanager.common.MongoDB
 {
-    public class AddressBookDatabase : MongoDbDatabaseBase
+    public sealed class AddressBookDatabase : MongoDbDatabaseBase
     {
         #region Statics
         private static readonly Lazy<AddressBookDatabase> _lazyInstance = new(() => new AddressBookDatabase());
