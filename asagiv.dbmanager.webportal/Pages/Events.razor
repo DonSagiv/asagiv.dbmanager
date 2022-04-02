@@ -17,13 +17,36 @@
 }
 else
 {
+    <Modal @ref="_eventNameModal">
+        <ModalContent Centered>
+            <ModalHeader>
+                <ModalTitle>
+                    Event Information
+                </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <TextEdit PlaceHolder="Event Name"/>
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="OnModalCancelClicked">Cancel</Button>
+                <Button Color="Color.Primary" Clicked="OnModalOkClickedAsync">OK</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <div class="text-center">
+        <Button Color="Color.Primary" Clicked="AddNewEvent" Margin="Margin.Is3.OnY">Add New Event</Button>
+    </div>
+
     <Select TValue="string" SelectedValue="@_selectedEvent" SelectedValueChanged="OnSelectedEventChangedAsync">
         <SelectItem TValue="string" Value="@string.Empty">--- Select an Event ---</SelectItem>
         @foreach (var eventInfo in _events)
     {
         <SelectItem TValue="string" Value="eventInfo.Id.ToString()">@eventInfo.EventName</SelectItem>
     }
-</Select>
+    </Select>
 
     if (_selectedEvent != null && _familyEventGifts != null)
     {
@@ -60,7 +83,7 @@ else
 @code {
     [Parameter]
     public string eventIdString { get; set; }
-
+    private Modal _eventNameModal;
     IList<EventInfo>? _events;
     private string _selectedEvent;
     private IList<FamilyEventGift>? _familyEventGifts;
@@ -70,10 +93,25 @@ else
     {
         _events = await AddressBookService.GetAllEventsAsync();
 
-        if(eventIdString != null)
+        if (eventIdString != null)
         {
             await OnSelectedEventChangedAsync(eventIdString);
         }
+    }
+
+    public void AddNewEvent()
+    {
+        _eventNameModal.Show();
+    }
+
+    public async Task OnModalOkClickedAsync()
+    {
+        _eventNameModal.Hide();
+    }
+
+    public void OnModalCancelClicked()
+    {
+        _eventNameModal.Hide();
     }
 
     private async Task OnSelectedEventChangedAsync(string newInputObject)
