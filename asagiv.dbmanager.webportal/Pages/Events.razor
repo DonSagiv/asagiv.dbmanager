@@ -58,6 +58,10 @@ else
     {
         <h2 class="text-center m-3">Gifts</h2>
 
+        <div class="text-center">
+            <Button Color="Color.Primary" Clicked="AddNewGift" Margin="Margin.Is3.OnY">Add New Gift</Button>
+        </div>
+
         <div>
 
             <DataGrid TItem="FamilyEventGift" Data="@_familyEventGifts" Responsive PageSize="@_count">
@@ -76,6 +80,9 @@ else
                         <div class="text-center">
                             <Button Padding="Padding.Is0">
                                 <Icon Name="IconName.Edit" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" Clicked="(() => OnEditGiftClicked(context))" />
+                            </Button>
+                            <Button Padding="Padding.Is0">
+                                <Icon Name="IconName.Delete" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" Clicked="(() => OnDeleteGiftClickedAsync(context))" />
                             </Button>
                         </div>
                     </DisplayTemplate>
@@ -111,6 +118,11 @@ else
     public void AddNewEvent()
     {
         _eventNameModal.Show();
+    }
+
+    public void AddNewGift()
+    {
+        NavManager.NavigateTo($"events/{_selectedEvent}/gifts/new");
     }
 
     public async Task OnModalOkClickedAsync()
@@ -187,6 +199,20 @@ else
         selectedFamilyEventGift.ThankYouNoteWritten = value;
 
         await AddressBookService.UpdateThankYouNoteWrittenAsync(selectedFamilyEventGift);
+    }
+
+    public async Task OnDeleteGiftClickedAsync(object context)
+    {
+        var selectedFamilyEventGift = context as FamilyEventGift;
+
+        if(selectedFamilyEventGift == null)
+        {
+            return;
+        }
+
+        await AddressBookService.DeleteGiftAsync(selectedFamilyEventGift);
+
+        await LoadEventDataAsync(_selectedEvent);
     }
 
     public void OnEditGiftClicked(object context)
