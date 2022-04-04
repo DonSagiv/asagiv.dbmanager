@@ -17,6 +17,23 @@
 }
 else
 {
+    <Modal @ref="_confirmationModal">
+        <ModalContent Centered>
+            <ModalHeader>
+                <ModalTitle>
+                    @_modalDialogTitle
+                </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                @_modalDialogMessage
+            </ModalBody>
+            <ModalFooter>
+                <Button Clicked="OnModalYesClickedAsync" Color="Color.Secondary">Yes</Button>
+                <Button Clicked="OnModalNoClickedAsync" Color="Color.Primary">No</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
     <Modal @ref="_eventNameModal">
         <ModalContent Centered>
             <ModalHeader>
@@ -25,28 +42,38 @@ else
                 </ModalTitle>
             </ModalHeader>
             <ModalBody>
-                <Field>
-                    <TextEdit @ref="_modalEventNameEdit" PlaceHolder="Event Name" />
-                </Field>
-                <Field>
-                    <MemoEdit @ref="_modalEventDescriptionEdit" PlaceHolder="Description" />
-                </Field>
-                <Field>
-                    <DateEdit TValue="DateTime?" @ref="_modalDateTimeEdit" />
-                </Field>
+
+                @if (_selectedEvent is not null)
+                {
+                    <Field>
+                        <TextEdit @bind-Text="_selectedEvent.EventName" PlaceHolder="Event Name" />
+                    </Field>
+                    <Field>
+                        <MemoEdit @bind-Text="_selectedEvent.Description" PlaceHolder="Description" />
+                    </Field>
+                    <Field>
+                        <DateEdit TValue="DateTime?" @bind-Date="_selectedEvent.EventDate" />
+                    </Field>
+                }
+
             </ModalBody>
             <ModalFooter>
-                <Button Color="Color.Secondary" Clicked="OnModalCancelClicked">Cancel</Button>
-                <Button Color="Color.Primary" Clicked="OnModalOkClickedAsync">OK</Button>
+                <Button Color="Color.Secondary" Clicked="OnCreateEventModalCancelClicked">Cancel</Button>
+                <Button Color="Color.Primary" Clicked="OnCreateEventModalOkClickedAsync">Apply</Button>
             </ModalFooter>
         </ModalContent>
     </Modal>
 
     <div class="text-center">
-        <Button Color="Color.Primary" Clicked="AddNewEvent" Margin="Margin.Is3.OnY">Add New Event</Button>
+        <Button Color="Color.Primary" Clicked="AddNewEvent" Margin="Margin.Is3.OnY.Is1.OnX">Add New Event</Button>
+        @if (_selectedEventIdString is not null)
+        {
+            <Button Color="Color.Primary" Clicked="EditEvent" Margin="Margin.Is3.OnY.Is1.OnX">Edit Event</Button>
+            <Button Color="Color.Primary" Clicked="DeleteEventAsync" Margin="Margin.Is3.OnY.Is1.OnX">Delete Event</Button>
+        }
     </div>
 
-    <Select TValue="string" SelectedValue="@_selectedEvent" SelectedValueChanged="OnSelectedEventChangedAsync">
+    <Select TValue="string" SelectedValue="@_selectedEventIdString" SelectedValueChanged="OnSelectedEventChangedAsync">
         <SelectItem TValue="string" Value="@string.Empty">--- Select an Event ---</SelectItem>
         @foreach (var eventInfo in _events)
     {
@@ -54,7 +81,7 @@ else
     }
 </Select>
 
-    if (_selectedEvent != null && _familyEventGifts != null)
+    if (_selectedEventIdString != null && _familyEventGifts != null)
     {
         <h2 class="text-center m-3">Gifts</h2>
 
@@ -97,13 +124,15 @@ else
     [Parameter]
     public string eventIdString { get; set; }
     private Modal? _eventNameModal;
-    private TextEdit? _modalEventNameEdit;
-    private MemoEdit? _modalEventDescriptionEdit;
-    private DateEdit<DateTime?>? _modalDateTimeEdit;
-    IList<EventInfo>? _events;
-    private string _selectedEvent;
+    private Modal? _confirmationModal;
+    private IList<EventInfo>? _events;
+    private EventInfo? _selectedEvent;
+    private string _selectedEventIdString;
     private IList<FamilyEventGift>? _familyEventGifts;
     private int _count;
+    private string _modalDialogTitle;
+    private string _modalDialogMessage;
+    private FamilyEventGift _familyEventGiftToDelete;
 
     protected override async Task OnInitializedAsync()
     {
@@ -117,39 +146,89 @@ else
 
     public void AddNewEvent()
     {
+        _selectedEvent = new EventInfo();
+
         _eventNameModal.Show();
+    }
+
+    public void EditEvent()
+    {
+        _eventNameModal.Show();
+    }
+
+    public async Task DeleteEventAsync()
+    {
+        _modalDialogTitle = "Delete Event";
+        _modalDialogMessage = "Are you sure you want to delete this event and all its information?";
+
+        _confirmationModal.Show();
+
+        await Task.CompletedTask;
+    }
+
+    public async Task OnModalYesClickedAsync()
+    {
+        if (_modalDialogTitle == "Delete Event")
+        {
+            await AddressBookService.DeleteEventAsync(_selectedEvent);
+
+            await OnSelectedEventChangedAsync(null);
+
+            _events = await AddressBookService.GetAllEventsAsync();
+
+            NavManager.NavigateTo($"events");
+        }
+        else if (_modalDialogTitle == "Delete Gift")
+        {
+            await AddressBookService.DeleteGiftAsync(_familyEventGiftToDelete);
+
+            await LoadEventDataAsync(_selectedEventIdString);
+
+            _familyEventGiftToDelete = null;
+        }
+
+        _confirmationModal.Hide();
+    }
+
+    public async Task OnModalNoClickedAsync()
+    {
+        if (_modalDialogMessage == "Delete Gift")
+        {
+            _familyEventGiftToDelete = null;
+        }
+
+        await Task.CompletedTask;
     }
 
     public void AddNewGift()
     {
-        NavManager.NavigateTo($"events/{_selectedEvent}/gifts/new");
+        NavManager.NavigateTo($"events/{_selectedEventIdString}/gifts/new");
     }
 
-    public async Task OnModalOkClickedAsync()
+    public async Task OnCreateEventModalOkClickedAsync()
     {
-        var eventInfo = new EventInfo
-            {
-                EventName = _modalEventNameEdit.Text,
-                EventDate = _modalDateTimeEdit.Date,
-                Description = _modalEventDescriptionEdit.Text
-            };
-
-        await AddressBookService.AppendEventAsync(eventInfo);
+        await AddressBookService.AppendEventAsync(_selectedEvent);
 
         _events = await AddressBookService.GetAllEventsAsync();
 
-        await OnSelectedEventChangedAsync(eventInfo.Id.ToString());
+        await OnSelectedEventChangedAsync(_selectedEvent.Id.ToString());
 
         await _eventNameModal.Hide();
     }
 
-    public void OnModalCancelClicked()
+    public async Task OnCreateEventModalCancelClicked()
     {
+        _selectedEvent = _events.FirstOrDefault(x => x?.Id.ToString() == _selectedEventIdString);
+
         _eventNameModal.Hide();
     }
 
     private async Task OnSelectedEventChangedAsync(string newInputObject)
     {
+        _selectedEventIdString = newInputObject;
+
+        _selectedEvent = _events.FirstOrDefault(x => x?.Id.ToString() == _selectedEventIdString);
+
         if (string.IsNullOrWhiteSpace(newInputObject))
         {
             NavManager.NavigateTo($"/events");
@@ -158,7 +237,10 @@ else
         }
         else
         {
-            NavManager.NavigateTo($"/events/{newInputObject}");
+            if (eventIdString != newInputObject)
+            {
+                NavManager.NavigateTo($"/events/{newInputObject}");
+            }
 
             await LoadEventDataAsync(newInputObject);
         }
@@ -173,9 +255,7 @@ else
 
     private async Task LoadEventDataAsync(string eventIdString)
     {
-        _selectedEvent = eventIdString;
-
-        if (!ObjectId.TryParse(_selectedEvent, out ObjectId eventId))
+        if (!ObjectId.TryParse(_selectedEventIdString, out ObjectId eventId))
         {
             ClearEventData();
 
@@ -203,16 +283,17 @@ else
 
     public async Task OnDeleteGiftClickedAsync(object context)
     {
-        var selectedFamilyEventGift = context as FamilyEventGift;
+        _familyEventGiftToDelete = context as FamilyEventGift;
 
-        if(selectedFamilyEventGift == null)
+        if (_familyEventGiftToDelete == null)
         {
             return;
         }
 
-        await AddressBookService.DeleteGiftAsync(selectedFamilyEventGift);
+        _modalDialogTitle = "Delete Gift";
+        _modalDialogMessage = "Are you sure you want to delete this gift?";
 
-        await LoadEventDataAsync(_selectedEvent);
+        _confirmationModal.Show();
     }
 
     public void OnEditGiftClicked(object context)
@@ -224,6 +305,6 @@ else
             return;
         }
 
-        NavManager.NavigateTo($"events/{_selectedEvent}/gifts/{selectedFamilyEventGift?.GiftId}");
+        NavManager.NavigateTo($"events/{_selectedEventIdString}/gifts/{selectedFamilyEventGift?.GiftId}");
     }
 }
