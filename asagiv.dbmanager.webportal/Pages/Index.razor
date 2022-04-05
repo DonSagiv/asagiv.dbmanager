@@ -35,43 +35,40 @@
             </Addons>
         </div>
 
-        <div>
-            @foreach (var familyChunk in _families.Chunk(3))
+
+        <div class="d-flex flex-wrap justify-content-center">
+            @foreach (var family in _families)
             {
-                <CardDeck>
-                    @foreach (var family in familyChunk)
-                    {
-                        <Card Margin="Margin.Is3.OnY" Style="background-color:lightgray">
-                            <CardBody>
-                                <CardTitle Weight="TextWeight.Bold" Size="4">
-                                    <div>@family.AddressHeader</div>
-                                </CardTitle>
-                                @if (family.Addresses.FirstOrDefault() != null)
+                <Card Margin="Margin.Is3" Style="background-color:lightgray;width:400px;height:250px">
+                    <CardBody>
+                        <CardTitle Weight="TextWeight.Bold" Size="4">
+                            <div>@family.AddressHeader</div>
+                        </CardTitle>
+                        @if (family.Addresses.FirstOrDefault() != null)
+                        {
+                            <CardText>
+                                @foreach (var line in family.Addresses.First().GetLines())
                                 {
-                                    <CardText>
-                                        @foreach (var line in family.Addresses.First().GetLines())
-                                        {
-                                            <div>@line</div>
-                                        }
-
-                                        <div>
-
-                                            <Button Clicked="@(_ => OnEditFamilyClicked(family.Id))">
-                                                <Icon Name="IconName.Edit" />
-                                            </Button>
-
-                                            <Button Clicked="@(_ => OnDeleteFamilyClicked(family))">
-                                                <Icon Name="IconName.Delete" />
-                                            </Button>
-
-                                        </div>
-
-                                    </CardText>
+                                    <div>@line</div>
                                 }
-                            </CardBody>
-                        </Card>
-                    }
-                </CardDeck>
+
+                                <div>
+
+                                    <Button Clicked="@(_ => OnEditFamilyClicked(family.Id))">
+                                        <Icon Name="IconName.Edit" />
+                                    </Button>
+
+                                    <Button Clicked="@(_ => OnDeleteFamilyClicked(family))">
+                                        <Icon Name="IconName.Delete" />
+                                    </Button>
+
+                                </div>
+
+                            </CardText>
+                        }
+                    </CardBody>
+                </Card>
+
             }
         </div>
 
