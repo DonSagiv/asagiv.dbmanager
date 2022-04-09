@@ -6,13 +6,22 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-RUN dir
 WORKDIR /src
 COPY ["asagiv.dbmanager.webportal/asagiv.dbmanager.webportal.csproj", "asagiv.dbmanager.webportal/"]
 COPY ["asagiv.dbmanager.addresses/asagiv.dbmanager.common.csproj", "asagiv.dbmanager.addresses/"]
-COPY ["asagiv.dbmanager.webportal/nuget.config", ""]
-RUN dir
+
+# Use the nuget-template file to build the nuget.config.
+COPY ["asagiv.dbmanager.webportal/nuget-template.config", ""]
+
+# Pass the GitHub PAT into the PAT_ARG
+ARG PAT_ARG="test"
+
+# Apply the Github PAT to the nuget-template.config file to create the nuget.config file.
+RUN sed "s/pat_arg/${PAT_ARG}/g" ./nuget-template.config > ./nuget.config
+
+# Run the "restore" with the selected nuget repositories.
 RUN dotnet restore "asagiv.dbmanager.webportal/asagiv.dbmanager.webportal.csproj" --configfile "./nuget.config"
+
 COPY . .
 WORKDIR "/src/asagiv.dbmanager.webportal"
 RUN dotnet build "asagiv.dbmanager.webportal.csproj" -c Release -o /app/build
