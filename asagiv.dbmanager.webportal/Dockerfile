@@ -6,9 +6,13 @@ EXPOSE 80
 EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+RUN dir
 WORKDIR /src
 COPY ["asagiv.dbmanager.webportal/asagiv.dbmanager.webportal.csproj", "asagiv.dbmanager.webportal/"]
-RUN dotnet restore "asagiv.dbmanager.webportal/asagiv.dbmanager.webportal.csproj"
+COPY ["asagiv.dbmanager.addresses/asagiv.dbmanager.common.csproj", "asagiv.dbmanager.addresses/"]
+COPY ["asagiv.dbmanager.webportal/nuget.config", ""]
+RUN dir
+RUN dotnet restore "asagiv.dbmanager.webportal/asagiv.dbmanager.webportal.csproj" --configfile "./nuget.config"
 COPY . .
 WORKDIR "/src/asagiv.dbmanager.webportal"
 RUN dotnet build "asagiv.dbmanager.webportal.csproj" -c Release -o /app/build

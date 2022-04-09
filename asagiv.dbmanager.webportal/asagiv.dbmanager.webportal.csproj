@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="asagiv.common.mongodb" Version="0.0.1" />
     <PackageReference Include="Blazorise.Bootstrap" Version="1.0.2" />
     <PackageReference Include="Blazorise.Components" Version="1.0.2" />
     <PackageReference Include="Blazorise.DataGrid" Version="1.0.2" />
@@ -18,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\asagiv.common\asagiv.common.mongodb\asagiv.common.mongodb.csproj" />
     <ProjectReference Include="..\asagiv.dbmanager.addresses\asagiv.dbmanager.common.csproj" />
   </ItemGroup>
 

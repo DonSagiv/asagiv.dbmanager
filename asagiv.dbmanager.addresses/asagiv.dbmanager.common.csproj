@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\asagiv.common\asagiv.common.mongodb\asagiv.common.mongodb.csproj" />
+    <PackageReference Include="asagiv.common.mongodb" Version="0.0.1" />
   </ItemGroup>
 
 </Project>
