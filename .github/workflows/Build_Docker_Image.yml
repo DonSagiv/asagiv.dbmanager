@@ -33,12 +33,16 @@ jobs:
 
     # Build Docker Image
     - name: Build Docker Image
-      run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:${{ steps.date.outputs.date }} .
+      run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:${{ steps.date.outputs.date }} --tag ghcr.io/donsagiv/webportal:latest .
 
     # Log into Docker
     - name: Log Into Docker
       run: docker login ghcr.io -u DonSagiv -p ${{ secrets.PACKAGE_PAT }}
 
-    #Push Docker Image
-    - name: Push Docker Image
+    # Push Docker Image for Date Tag
+    - name: Push Docker Image - Date Tag
       run: docker push ghcr.io/donsagiv/webportal:${{ steps.date.outputs.date }}
+      
+    # Push Docker Image for Date Tag
+    - name: Push Docker Image - Latest Tag
+      run: docker push ghcr.io/donsagiv/webportal:latest
