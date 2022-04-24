@@ -1,9 +1,153 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+@using MongoDB.Bson
+@using asagiv.dbmanager.webportal.Data
+@using asagiv.dbmanager.common.Models
+@using System.Linq
+@inject NavigationManager NavManager
+@inject AddressBookDbService AddressBookService
 
-<h1>Hello, world!</h1>
+<PageTitle>Address Book</PageTitle>
 
-Welcome to your new app.
+<h1 class="text-center">Address Book</h1>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div>
+    @if (_families == null)
+    {
+        <Text>Loading...</Text>
+    }
+    else
+    {
+        <div class="text-center">
+            <Button Color="Color.Primary" Clicked="OnAddFamilyClicked" Margin="Margin.Is2">Add New Family</Button>
+        </div>
+
+        <div>
+            <Addons Margin="Margin.Is2">
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.Search" />
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Size="Size.ExtraLarge" Text="@_searchString" TextChanged="@RefreshFamiliesAsync" />
+                </Addon>
+            </Addons>
+        </div>
+
+
+        <div class="d-flex flex-wrap justify-content-center">
+            @foreach (var family in _families)
+            {
+                <Card Margin="Margin.Is3" Style="background-color:lightgray;width:400px;height:250px">
+                    <CardBody>
+                        <CardTitle Weight="TextWeight.Bold" Size="4">
+                            <div>@family.AddressHeader</div>
+                        </CardTitle>
+                        @if (family.Addresses.FirstOrDefault() != null)
+                        {
+                            <CardText>
+                                @foreach (var line in family.Addresses.First().GetLines())
+                                {
+                                    <div>@line</div>
+                                }
+
+                                <div>
+
+                                    <Button Clicked="@(_ => OnEditFamilyClicked(family.Id))">
+                                        <Icon Name="IconName.Edit" />
+                                    </Button>
+
+                                    <Button Clicked="@(_ => OnDeleteFamilyClicked(family))">
+                                        <Icon Name="IconName.Delete" />
+                                    </Button>
+
+                                </div>
+
+                            </CardText>
+                        }
+                    </CardBody>
+                </Card>
+
+            }
+        </div>
+
+        <Modal @ref="_deleteFamilyModal">
+            <ModalContent Centered="true">
+                <ModalHeader>
+                    Delete Family
+                </ModalHeader>
+                <ModalBody>
+                    @($"Are you sure you want to delte the {_familyToDelete?.FamilyName} family?")
+                </ModalBody>
+                <ModalFooter>
+                    <Button Color="Color.Secondary" Clicked="DeleteFamilyAsync">Yes</Button>
+                    <Button Color="Color.Primary" Clicked="CloseDialog">No</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    }
+</div>
+
+@code {
+    private IList<Family>? _families;
+    private Family? _familyToDelete;
+    private Modal? _deleteFamilyModal;
+    private string _searchString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await RefreshFamiliesAsync();
+    }
+
+    private async Task RefreshFamiliesAsync(string searchString = null)
+    {
+        _searchString = searchString;
+
+        var familyAwaiter = AddressBookService.GetAllFamiliesAsync(_searchString);
+
+        _families = await familyAwaiter.ToListAsync();
+    }
+
+    private void OnAddFamilyClicked(object obj)
+    {
+        NavManager.NavigateTo($"families/new");
+    }
+
+    private void OnEditFamilyClicked(ObjectId familyId)
+    {
+        NavManager.NavigateTo($"families/{familyId.ToString()}");
+    }
+
+    private void OnDeleteFamilyClicked(Family family)
+    {
+        _familyToDelete = family;
+
+        _deleteFamilyModal?.Show();
+    }
+
+    private async Task DeleteFamilyAsync(object obj)
+    {
+        if (_familyToDelete == null)
+        {
+            return;
+        }
+
+        _deleteFamilyModal?.Hide();
+
+        await AddressBookService.DeleteFamilyAsync(_familyToDelete.Id);
+
+        await RefreshFamiliesAsync();
+
+        _familyToDelete = null;
+    }
+
+    public void CloseDialog(object obj)
+    {
+        _deleteFamilyModal?.Hide();
+
+        _familyToDelete = null;
+    }
+}

@@ -1,0 +1,215 @@
+﻿@page "/families/{Id}"
+
+@using MongoDB.Bson
+@using asagiv.dbmanager.common.Models
+@using asagiv.dbmanager.webportal.Data
+@inject NavigationManager NavManager
+@inject AddressBookDbService AddressBookService
+
+<PageTitle>Family Information</PageTitle>
+
+<h1 class="text-center">Family Information</h1>
+
+@if (_family == null)
+{
+    <div>
+        <Text>Loading...</Text>
+    </div>
+}
+else
+{
+    <div class="m-4">
+
+        <CardDeck>
+            <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
+
+                <Div Margin="Margin.Is3">
+                    <Fields>
+
+                        <Field ColumnSize="ColumnSize.Is4">
+                            <FieldLabel>Family Name</FieldLabel>
+                            <TextEdit Size="Size.ExtraLarge" @bind-Text="@_family.FamilyName" />
+                        </Field>
+
+                        <Field ColumnSize="ColumnSize.Is8">
+                            <FieldLabel>Family Address Header</FieldLabel>
+                            <TextEdit Size="Size.ExtraLarge" @bind-Text="@_family.AddressHeader" />
+                        </Field>
+
+                    </Fields>
+
+                </Div>
+
+            </Card>
+        </CardDeck>
+
+        <Divider />
+
+        <div>
+            <Button Color="Color.Secondary" Clicked="OnAddAddressClicked" Margin="Margin.Is2.OnY">Add New Address</Button>
+        </div>
+
+        @foreach (var address in _family.Addresses)
+        {
+            <CardDeck>
+                <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
+
+                    <Div Margin="Margin.Is3">
+
+                        <Field>
+                            <FieldLabel>Street</FieldLabel>
+                            <MemoEdit @bind-Text="@address.Street" AutoSize />
+                        </Field>
+
+                        <Fields>
+
+                            <Field ColumnSize="ColumnSize.Is4">
+                                <FieldLabel>City</FieldLabel>
+                                <TextEdit TextOverflow="TextOverflow.Wrap" @bind-Text="@address.City" />
+                            </Field>
+
+                            <Field ColumnSize="ColumnSize.Is3">
+                                <FieldLabel>State</FieldLabel>
+                                <TextEdit @bind-Text="@address.State" />
+                            </Field>
+
+                            <Field ColumnSize="ColumnSize.Is2">
+                                <FieldLabel>Zip</FieldLabel>
+                                <TextEdit @bind-Text="@address.Zip" />
+                            </Field>
+
+                            <Field ColumnSize="ColumnSize.Is3">
+                                <FieldLabel>Country</FieldLabel>
+                                <TextEdit @bind-Text="@address.Country" />
+                            </Field>
+
+                        </Fields>
+
+                        <Button Color="Color.Secondary" Margin="Margin.Is3.FromTop" Clicked="@(_ => OnDeleteAddressClicked(address))">Delete Address</Button>
+
+                    </Div>
+
+                </Card>
+            </CardDeck>
+        }
+
+        <Divider />
+
+        <div>
+            <Button Color="Color.Secondary" Clicked="OnAddPersonClicked" Margin="Margin.Is2.OnY">Add New Person</Button>
+        </div>
+
+        @foreach (var person in _family.People)
+        {
+            <CardDeck>
+                <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
+
+                    <Div Margin="Margin.Is3">
+
+                        <Fields>
+
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Name</FieldLabel>
+                                <TextEdit @bind-Text="@person.Name" />
+                            </Field>
+
+                            <Field ColumnSize="ColumnSize.Is6">
+                                <FieldLabel>Birthday</FieldLabel>
+                                <DateEdit TValue="DateTime?" @bind-Date="@person.DateOfBirth" />
+                            </Field>
+
+                        </Fields>
+
+                        <Button Color="Color.Secondary" Margin="Margin.Is3.FromTop" Clicked="@(_ => OnDeletePersonClicked(person))">Delete Person</Button>
+
+                    </Div>
+
+                </Card>
+            </CardDeck>
+        }
+
+        <div>
+            <Button Color="Color.Primary" Margin="Margin.Is3.OnY" Clicked="OnSaveClickedAsync">Save</Button>
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Id { get; set; }
+    private Family? _family;
+    private IList<asagiv.dbmanager.common.Models.Address>? _removedAddresses;
+    private IList<Person>? _removedPeople;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _removedAddresses = new List<asagiv.dbmanager.common.Models.Address>();
+        _removedPeople = new List<Person>();
+
+        if (Id == "new")
+        {
+            _family = new Family();
+        }
+        else if (ObjectId.TryParse(Id, out var familyId))
+        {
+            _family = await AddressBookService.GetFamilyAsync(familyId);
+        }
+    }
+
+    private void OnAddAddressClicked()
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        _family.Addresses.Add(new asagiv.dbmanager.common.Models.Address { FamilyId = _family.Id });
+    }
+
+    private void OnAddPersonClicked()
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        _family.People.Add(new Person { FamilyId = _family.Id });
+    }
+
+    private void OnDeleteAddressClicked(asagiv.dbmanager.common.Models.Address address)
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        _family.Addresses.Remove(address);
+
+        _removedAddresses?.Add(address);
+    }
+
+    private void OnDeletePersonClicked(Person person)
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        _family.People.Remove(person);
+
+        _removedPeople?.Add(person);
+    }
+
+    private async Task OnSaveClickedAsync()
+    {
+        if (_family == null)
+        {
+            return;
+        }
+
+        await AddressBookService.SaveFamilyAsync(_family, _removedAddresses, _removedPeople);
+
+        NavManager.NavigateTo("");
+    }
+}

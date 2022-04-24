@@ -1,0 +1,323 @@
+﻿@page "/events"
+@page "/events/{eventIdString}"
+
+@using MongoDB.Bson
+@using asagiv.dbmanager.common.Models
+@using asagiv.dbmanager.webportal.Data
+@inject NavigationManager NavManager
+@inject AddressBookDbService AddressBookService
+
+<PageTitle>Events</PageTitle>
+
+<h1 class="text-center">Events</h1>
+
+@if (_events == null)
+{
+    <Text>Loading...</Text>
+}
+else
+{
+    <Modal @ref="_confirmationModal">
+        <ModalContent Centered>
+            <ModalHeader>
+                <ModalTitle>
+                    @_modalDialogTitle
+                </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+                @_modalDialogMessage
+            </ModalBody>
+            <ModalFooter>
+                <Button Clicked="OnModalYesClickedAsync" Color="Color.Secondary">Yes</Button>
+                <Button Clicked="OnModalNoClickedAsync" Color="Color.Primary">No</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <Modal @ref="_eventNameModal">
+        <Validations @ref="_eventNameModalValidations">
+            <ModalContent Centered>
+                <ModalHeader>
+                    <ModalTitle>
+                        Event Information
+                    </ModalTitle>
+                </ModalHeader>
+                <ModalBody>
+
+                    @if (_selectedEvent is not null)
+                    {
+                        <Field>
+                            <Validation Validator="ValidationRule.IsNotEmpty">
+                                <TextEdit @bind-Text="_selectedEvent.EventName" PlaceHolder="Event Name">
+                                    <Feedback>
+                                        <ValidationNone>Please enter an event name.</ValidationNone>
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </Field>
+                        <Field>
+                            <MemoEdit @bind-Text="_selectedEvent.Description" PlaceHolder="Description" />
+                        </Field>
+                        <Field>
+                            <DateEdit TValue="DateTime?" @bind-Date="_selectedEvent.EventDate" />
+                        </Field>
+                    }
+                </ModalBody>
+                <ModalFooter>
+                    <Button Color="Color.Secondary" Clicked="OnCreateEventModalCancelClicked">Cancel</Button>
+                    <Button Color="Color.Primary" Clicked="OnCreateEventModalOkClickedAsync">Apply</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Validations>
+    </Modal>
+
+    <div class="text-center">
+        <Button Color="Color.Primary" Clicked="AddNewEvent" Margin="Margin.Is3.OnY.Is1.OnX">Add New Event</Button>
+        @if (_selectedEventIdString is not null)
+        {
+            <Button Color="Color.Primary" Clicked="EditEvent" Margin="Margin.Is3.OnY.Is1.OnX">Edit Event</Button>
+            <Button Color="Color.Primary" Clicked="DeleteEventAsync" Margin="Margin.Is3.OnY.Is1.OnX">Delete Event</Button>
+        }
+    </div>
+
+    <Select TValue="string" SelectedValue="@_selectedEventIdString" SelectedValueChanged="OnSelectedEventChangedAsync">
+        <SelectItem TValue="string" Value="@string.Empty">--- Select an Event ---</SelectItem>
+        @foreach (var eventInfo in _events)
+    {
+        <SelectItem TValue="string" Value="eventInfo.Id.ToString()">@eventInfo.EventName</SelectItem>
+    }
+</Select>
+
+    if (_selectedEventIdString != null && _familyEventGifts != null)
+    {
+        <h2 class="text-center m-3">Gifts</h2>
+
+        <div class="text-center">
+            <Button Color="Color.Primary" Clicked="AddNewGift" Margin="Margin.Is3.OnY">Add New Gift</Button>
+        </div>
+
+        <div>
+
+            <DataGrid TItem="FamilyEventGift" Data="@_familyEventGifts" Responsive PageSize="@_count">
+                <DataGridCommandColumn />
+                <DataGridColumn Field="Family.AddressHeader" HeaderTextAlignment="TextAlignment.Center" TextAlignment="TextAlignment.Center" Caption="From" Sortable="true" />
+                <DataGridColumn Field="EventGift.GiftDescription" HeaderTextAlignment="TextAlignment.Center" TextAlignment="TextAlignment.Center" Caption="Gift" Sortable="true" />
+                <DataGridCheckColumn Field="@nameof(FamilyEventGift.ThankYouNoteWritten)" HeaderTextAlignment="TextAlignment.Center" Caption="TY Written" Sortable="true">
+                    <DisplayTemplate>
+                        <div class="text-center">
+                            <Check TValue="bool" Checked="@((context as FamilyEventGift).ThankYouNoteWritten)" CheckedChanged="(b => OnThankYouNoteWrittenChanged(context, b))" />
+                        </div>
+                    </DisplayTemplate>
+                </DataGridCheckColumn>
+                <DataGridCheckColumn HeaderTextAlignment="TextAlignment.Center" Caption="Options" Sortable="false">
+                    <DisplayTemplate>
+                        <div class="text-center">
+                            <Button Padding="Padding.Is0">
+                                <Icon Name="IconName.Edit" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" Clicked="(() => OnEditGiftClicked(context))" />
+                            </Button>
+                            <Button Padding="Padding.Is0">
+                                <Icon Name="IconName.Delete" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" Clicked="(() => OnDeleteGiftClickedAsync(context))" />
+                            </Button>
+                        </div>
+                    </DisplayTemplate>
+                </DataGridCheckColumn>
+            </DataGrid>
+
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string eventIdString { get; set; }
+    private Modal? _eventNameModal;
+    private Validations _eventNameModalValidations;
+    private Modal? _confirmationModal;
+    private IList<EventInfo>? _events;
+    private EventInfo? _selectedEvent;
+    private string _selectedEventIdString;
+    private IList<FamilyEventGift>? _familyEventGifts;
+    private int _count;
+    private string _modalDialogTitle;
+    private string _modalDialogMessage;
+    private FamilyEventGift _familyEventGiftToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _events = await AddressBookService.GetAllEventsAsync();
+
+        if (eventIdString != null)
+        {
+            await OnSelectedEventChangedAsync(eventIdString);
+        }
+    }
+
+    public void AddNewEvent()
+    {
+        _selectedEvent = new EventInfo();
+
+        _eventNameModal.Show();
+    }
+
+    public void EditEvent()
+    {
+        _eventNameModal.Show();
+    }
+
+    public async Task DeleteEventAsync()
+    {
+        _modalDialogTitle = "Delete Event";
+        _modalDialogMessage = "Are you sure you want to delete this event and all its information?";
+
+        await _confirmationModal.Show();
+
+        await Task.CompletedTask;
+    }
+
+    public async Task OnModalYesClickedAsync()
+    {
+        if (_modalDialogTitle == "Delete Event")
+        {
+            await AddressBookService.DeleteEventAsync(_selectedEvent);
+
+            await OnSelectedEventChangedAsync(null);
+
+            _events = await AddressBookService.GetAllEventsAsync();
+
+            NavManager.NavigateTo($"events");
+        }
+        else if (_modalDialogTitle == "Delete Gift")
+        {
+            await AddressBookService.DeleteGiftAsync(_familyEventGiftToDelete);
+
+            await LoadEventDataAsync(_selectedEventIdString);
+
+            _familyEventGiftToDelete = null;
+        }
+
+        await _confirmationModal.Hide();
+    }
+
+    public async Task OnModalNoClickedAsync()
+    {
+        if (_modalDialogMessage == "Delete Gift")
+        {
+            _familyEventGiftToDelete = null;
+        }
+
+        await _confirmationModal.Hide();
+    }
+
+    public void AddNewGift()
+    {
+        NavManager.NavigateTo($"events/{_selectedEventIdString}/gifts/new");
+    }
+
+    public async Task OnCreateEventModalOkClickedAsync()
+    {
+        if (await _eventNameModalValidations.ValidateAll() != true)
+        {
+            return;
+        }
+
+        await AddressBookService.AppendEventAsync(_selectedEvent);
+
+        _events = await AddressBookService.GetAllEventsAsync();
+
+        await OnSelectedEventChangedAsync(_selectedEvent.Id.ToString());
+
+        await _eventNameModal.Hide();
+    }
+
+    public async Task OnCreateEventModalCancelClicked()
+    {
+        _selectedEvent = _events.FirstOrDefault(x => x?.Id.ToString() == _selectedEventIdString);
+
+        await _eventNameModal.Hide();
+    }
+
+    private async Task OnSelectedEventChangedAsync(string newInputObject)
+    {
+        _selectedEventIdString = newInputObject;
+
+        _selectedEvent = _events.FirstOrDefault(x => x?.Id.ToString() == _selectedEventIdString);
+
+        if (string.IsNullOrWhiteSpace(newInputObject))
+        {
+            NavManager.NavigateTo($"/events");
+
+            ClearEventData();
+        }
+        else
+        {
+            if (eventIdString != newInputObject)
+            {
+                NavManager.NavigateTo($"/events/{newInputObject}");
+            }
+
+            await LoadEventDataAsync(newInputObject);
+        }
+    }
+
+    private void ClearEventData()
+    {
+        _familyEventGifts = null;
+
+        _count = 0;
+    }
+
+    private async Task LoadEventDataAsync(string eventIdString)
+    {
+        if (!ObjectId.TryParse(_selectedEventIdString, out ObjectId eventId))
+        {
+            ClearEventData();
+
+            return;
+        }
+
+        _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(eventId);
+
+        _count = _familyEventGifts.Count;
+    }
+
+    private async Task OnThankYouNoteWrittenChanged(object context, bool value)
+    {
+        var selectedFamilyEventGift = context as FamilyEventGift;
+
+        if (selectedFamilyEventGift == null)
+        {
+            return;
+        }
+
+        selectedFamilyEventGift.ThankYouNoteWritten = value;
+
+        await AddressBookService.UpdateThankYouNoteWrittenAsync(selectedFamilyEventGift);
+    }
+
+    public async Task OnDeleteGiftClickedAsync(object context)
+    {
+        _familyEventGiftToDelete = context as FamilyEventGift;
+
+        if (_familyEventGiftToDelete == null)
+        {
+            return;
+        }
+
+        _modalDialogTitle = "Delete Gift";
+        _modalDialogMessage = "Are you sure you want to delete this gift?";
+
+        await _confirmationModal.Show();
+    }
+
+    public void OnEditGiftClicked(object context)
+    {
+        var selectedFamilyEventGift = context as FamilyEventGift;
+
+        if (selectedFamilyEventGift == null)
+        {
+            return;
+        }
+
+        NavManager.NavigateTo($"events/{_selectedEventIdString}/gifts/{selectedFamilyEventGift?.GiftId}");
+    }
+}
