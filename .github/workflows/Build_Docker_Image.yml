@@ -16,19 +16,23 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    # Used to verify the workflow has started.
-    - name: Verify Workflow
-      run: echo Running Docker Build and Push
-
     # Get .NET Core builder
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 6.0.x
 
+    # Set current date time to environemnt variable.
+    - name: Set Date Time Variable
+      run: DATE_TIME=`date +%y%m%d_%H%M%S`
+
+    # Used to verify the workflow has started.
+    - name: Verify Workflow
+      run: echo Running Docker Build and Push ${DATE_TIME}
+
     # Build Docker Image
     - name: Build Docker Image
-      run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:latest .
+      run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:${DATE_TIME} .
 
     # Log into Docker
     - name: Log Into Docker
@@ -36,4 +40,4 @@ jobs:
 
     #Push Docker Image
     - name: Push Docker Image
-      run: docker push ghcr.io/donsagiv/webportal:latest
+      run: docker push ghcr.io/donsagiv/webportal:{DATE_TIME}
