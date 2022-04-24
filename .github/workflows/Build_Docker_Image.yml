@@ -30,6 +30,14 @@ jobs:
     # Used to verify the workflow has started.
     - name: Verify Workflow
       run: echo Running Docker Build and Push ${{ steps.date.outputs.date }}
+      
+    # Sleep for 10 seconds
+    - name: Sleep 10 seconds
+      run: sleep 10
+      
+    # Ensure that the date and time is not dynamic.
+    - name: Verify Workflow
+      run: echo Running Docker Build and Push ${{ steps.date.outputs.date }}
 
     # Build Docker Image
     # - name: Build Docker Image
