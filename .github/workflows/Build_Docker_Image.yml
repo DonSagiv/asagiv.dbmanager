@@ -30,23 +30,15 @@ jobs:
     # Used to verify the workflow has started.
     - name: Verify Workflow
       run: echo Running Docker Build and Push ${{ steps.date.outputs.date }}
-      
-    # Sleep for 10 seconds
-    - name: Sleep 10 seconds
-      run: sleep 10
-      
-    # Ensure that the date and time is not dynamic.
-    - name: Verify Workflow
-      run: echo Running Docker Build and Push ${{ steps.date.outputs.date }}
 
     # Build Docker Image
-    # - name: Build Docker Image
-    #   run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:${DATE_TIME} .
+    - name: Build Docker Image
+      run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:${{ steps.date.outputs.date }} .
 
     # Log into Docker
-    # - name: Log Into Docker
-    #   run: docker login ghcr.io -u DonSagiv -p ${{ secrets.PACKAGE_PAT }}
+    - name: Log Into Docker
+      run: docker login ghcr.io -u DonSagiv -p ${{ secrets.PACKAGE_PAT }}
 
     #Push Docker Image
-    # - name: Push Docker Image
-    #   run: docker push ghcr.io/donsagiv/webportal:{DATE_TIME}
+    - name: Push Docker Image
+      run: docker push ghcr.io/donsagiv/webportal:${{ steps.date.outputs.date }}
