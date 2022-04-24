@@ -28,4 +28,4 @@ jobs:
 
     # Push Build Docker Images
     - name: Build Docker Image
-      run: docker build . --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ sa }}
+      run: docker build . --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }}
