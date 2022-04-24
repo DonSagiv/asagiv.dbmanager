@@ -255,7 +255,7 @@ namespace asagiv.dbmanager.webportal.Data
         public async Task SaveFamilyEventGiftAsync(EventGift eventGift, IEnumerable<FamilyEventGift> familyEventGifts, IEnumerable<FamilyEventGift> removedFamilyEventGifts)
         {
             await _eventGifts.AppendAsync(eventGift);
-        
+
             await _familyEventGifts.DeleteManyAsync(removedFamilyEventGifts
                 .Select(x => x.Id).ToArray());
 

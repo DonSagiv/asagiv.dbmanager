@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="asagiv.common.mongodb" Version="0.0.1" />
+    <PackageReference Include="asagiv.common.mongodb" Version="0.0.2" />
   </ItemGroup>
 
 </Project>

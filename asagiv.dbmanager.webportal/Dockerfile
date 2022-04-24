@@ -13,10 +13,11 @@ COPY ["asagiv.dbmanager.addresses/asagiv.dbmanager.common.csproj", "asagiv.dbman
 # Use the nuget-template file to build the nuget.config.
 COPY ["asagiv.dbmanager.webportal/nuget-template.config", ""]
 
-# Pass the GitHub PAT into the PAT_ARG
-ARG PAT_ARG="test"
+ARG PAT_ARG
+RUN echo $PAT_ARG
 
 # Apply the Github PAT to the nuget-template.config file to create the nuget.config file.
+# This requires a PAT_ARG environment variable when calling docker build.
 RUN sed "s/pat_arg/${PAT_ARG}/g" ./nuget-template.config > ./nuget.config
 
 # Run the "restore" with the selected nuget repositories.
