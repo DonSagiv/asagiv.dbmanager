@@ -6,11 +6,8 @@ on:
   pull_request:
     branches: [ master ]
 
-env:
-  IMAGE_NAME: ghcr.io/donsagiv/webportal:$(date +"%y%m%d_%H%M%S")
-
 jobs:
-  build_image_and_push:
+  build:
 
     runs-on: ubuntu-latest
     # Stop building if it takes longer than 15 minutes.
@@ -21,7 +18,7 @@ jobs:
 
     # Used to verify the workflow has started.
     - name: Verify Workflow
-      run: echo Build and Push Docker Image ${IMAGE_NAME}
+      run: echo Running Publish to Nuget
 
     # Get .NET Core builder
     - name: Setup .NET Core
@@ -29,22 +26,6 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
-    # Restore all dependencies
-    - name: Restore dependencies
-      run: dotnet restore
-
-    # Build project with Release configuration
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-
-    # Pack NuGet packages with Release configuration
-    - name: Pack
-      run: dotnet pack --no-restore --configuration Release -o:package
-
     # Push Build Docker Images
     - name: Build Docker Image
-      run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag $IMAGE_NAME .
-
-    # Push Docker Image
-    - name: Push Docker Image
-      run: docker push $IMAGE_NAME
+      run: docker build . --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ sa }}
