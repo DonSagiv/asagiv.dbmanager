@@ -1,4 +1,4 @@
-name: Publish to Nuget
+name: Build and Push Docker Image
 
 on:
   push:
@@ -26,6 +26,6 @@ jobs:
       with:
         dotnet-version: 6.0.x
 
-    # Push Build Docker Images
+    # Build Docker Image
     - name: Build Docker Image
-      run: docker build . --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }}
+      run: docker build -file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:latest .
