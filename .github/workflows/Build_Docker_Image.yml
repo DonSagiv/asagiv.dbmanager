@@ -18,7 +18,7 @@ jobs:
 
     # Used to verify the workflow has started.
     - name: Verify Workflow
-      run: echo Running Publish to Nuget
+      run: echo Running Docker Build and Push
 
     # Get .NET Core builder
     - name: Setup .NET Core
@@ -29,3 +29,7 @@ jobs:
     # Build Docker Image
     - name: Build Docker Image
       run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:latest .
+
+    #Push Docker Image
+    - name: Push Docker Image
+      run: docker push ghcr.io/donsagiv/webportal:latest
