@@ -25,7 +25,7 @@ jobs:
     # Set current date time to environemnt variable.
     - name: Set Date Time Variable
       id: date
-      run: echo "::set-output name=date::$(date +%y%m%d.%H%M%S)"
+      run: echo "::set-output name=date::$(date +%y%m%d_%H%M%S)"
 
     # Used to verify the workflow has started.
     - name: Verify Workflow
