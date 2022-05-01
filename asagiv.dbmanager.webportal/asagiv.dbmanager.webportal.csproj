@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="asagiv.common" Version="0.0.3-220501.143537" />
-    <PackageReference Include="asagiv.common.databases" Version="0.0.3-220501.143537" />
-    <PackageReference Include="asagiv.common.mongodb" Version="0.0.3-220501.143537" />
+    <PackageReference Include="asagiv.common" Version="0.0.4" />
+    <PackageReference Include="asagiv.common.databases" Version="0.0.4" />
+    <PackageReference Include="asagiv.common.mongodb" Version="0.0.4" />
     <PackageReference Include="Blazorise.Bootstrap" Version="1.0.4" />
     <PackageReference Include="Blazorise.Components" Version="1.0.4" />
     <PackageReference Include="Blazorise.DataGrid" Version="1.0.4" />
