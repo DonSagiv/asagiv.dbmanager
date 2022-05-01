@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>03606ea2-1b06-4ded-94f6-271aa4b9867c</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileRunArguments> -e MONGO_CONN_STR="mongodb://192.168.4.4:27017"</DockerfileRunArguments>
   </PropertyGroup>
 
   <ItemGroup>
