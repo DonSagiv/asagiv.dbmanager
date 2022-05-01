@@ -1,17 +1,14 @@
-﻿using asagiv.common.mongodb;
+﻿using asagiv.common.databases;
+using asagiv.common.mongodb;
 using asagiv.dbmanager.common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Serilog;
 
 namespace asagiv.dbmanager.common.MongoDB
 {
     public class EventsCollection : MongoDbCollectionBase<EventInfo>
     {
         #region Constructor
-        public EventsCollection() : base(AddressBookDatabase.Instance, "Events") { }
+        public EventsCollection(IDbDatabase database, ILogger logger = null) : base(database, "Events", logger) { }
         #endregion
     }
 }

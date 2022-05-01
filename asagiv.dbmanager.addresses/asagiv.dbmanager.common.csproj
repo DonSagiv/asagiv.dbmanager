@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="asagiv.common.mongodb" Version="0.0.2" />
+    <PackageReference Include="asagiv.common" Version="0.0.3-220501.143537" />
+    <PackageReference Include="asagiv.common.databases" Version="0.0.3-220501.143537" />
+    <PackageReference Include="asagiv.common.mongodb" Version="0.0.3-220501.143537" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
   </ItemGroup>
 
 </Project>

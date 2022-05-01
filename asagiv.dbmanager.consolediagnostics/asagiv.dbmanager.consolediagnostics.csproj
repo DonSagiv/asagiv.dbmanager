@@ -8,7 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="asagiv.common" Version="0.0.3-220501.143537" />
+    <PackageReference Include="asagiv.common.databases" Version="0.0.3-220501.143537" />
+    <PackageReference Include="asagiv.common.mongodb" Version="0.0.3-220501.143537" />
     <PackageReference Include="CsvHelper" Version="27.2.1" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
   </ItemGroup>
 
   <ItemGroup>

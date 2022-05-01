@@ -275,7 +275,7 @@ else
             return;
         }
 
-        _familyEventGifts = await AddressBookService.GetFamilyEventGiftsAsync(eventId);
+        _familyEventGifts = await AddressBookService.GetGiftsForEvent(eventId);
 
         _count = _familyEventGifts.Count;
     }

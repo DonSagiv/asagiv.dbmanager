@@ -7,6 +7,8 @@ using System.Globalization;
 
 Console.WriteLine("Initializing Console Diagnostics");
 
+/* ---
+
 // Initialize Mongo Client
 MongoDbClient.Instance.ConnectAsync("mongodb://192.168.4.4:27017");
 
@@ -161,3 +163,5 @@ public class ClassMapFamilyEventGift : ClassMap<FamilyEventGift>
         Map(x => x.ThankYouNoteWritten).Index(3);
     }
 }
+
+--- */

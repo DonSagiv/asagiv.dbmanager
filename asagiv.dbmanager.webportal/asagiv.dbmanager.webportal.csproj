@@ -9,12 +9,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="asagiv.common.mongodb" Version="0.0.2" />
+    <PackageReference Include="asagiv.common" Version="0.0.3-220501.143537" />
+    <PackageReference Include="asagiv.common.databases" Version="0.0.3-220501.143537" />
+    <PackageReference Include="asagiv.common.mongodb" Version="0.0.3-220501.143537" />
     <PackageReference Include="Blazorise.Bootstrap" Version="1.0.4" />
     <PackageReference Include="Blazorise.Components" Version="1.0.4" />
     <PackageReference Include="Blazorise.DataGrid" Version="1.0.4" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
+    <PackageReference Include="Serilog" Version="2.11.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.3.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 

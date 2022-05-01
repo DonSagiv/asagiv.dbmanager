@@ -1,16 +1,22 @@
+using asagiv.common;
+using asagiv.common.databases;
+using asagiv.common.Logging;
+using asagiv.common.mongodb;
 using asagiv.dbmanager.common.MongoDB;
 using asagiv.dbmanager.webportal.Data;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
-
-MongoDbClient.Instance.Connect("mongodb://192.168.4.4:27017");
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.UseSerilog();
+builder.Services.AddSingleton<IDbClient, MongoDbClient>();
+builder.Services.AddSingleton<IDbDatabase, MongoDbDatabase>();
 builder.Services.AddSingleton<FamilyCollection>();
 builder.Services.AddSingleton<AddressCollection>();
 builder.Services.AddSingleton<PeopleCollection>();

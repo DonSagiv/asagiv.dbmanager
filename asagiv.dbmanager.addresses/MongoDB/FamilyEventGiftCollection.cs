@@ -1,5 +1,7 @@
-﻿using asagiv.common.mongodb;
+﻿using asagiv.common.databases;
+using asagiv.common.mongodb;
 using asagiv.dbmanager.common.Models;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,6 @@ namespace asagiv.dbmanager.common.MongoDB
 {
     public class FamilyEventGiftCollection : MongoDbCollectionBase<FamilyEventGift>
     {
-        public FamilyEventGiftCollection() : base(AddressBookDatabase.Instance, "FamilyEventGift") { }
+        public FamilyEventGiftCollection(IDbDatabase database, ILogger logger = null) : base(database, "FamilyEventGift", logger) { }
     }
 }
