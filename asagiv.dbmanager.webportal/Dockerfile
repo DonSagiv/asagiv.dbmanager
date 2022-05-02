@@ -5,6 +5,8 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
+ENV MONGO_CONN_STR="mongo"
+
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["asagiv.dbmanager.webportal/asagiv.dbmanager.webportal.csproj", "asagiv.dbmanager.webportal/"]
