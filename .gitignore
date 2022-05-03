@@ -12,6 +12,7 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+/asagiv.dbmanager.webportal/Logs/
 
 # Build results
 [Dd]ebug/
@@ -338,3 +339,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
