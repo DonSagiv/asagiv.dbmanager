@@ -1,0 +1,25 @@
+version: "3.9"
+   
+services:
+
+  mongo:
+    image: mongo
+    volumes:
+      - /extHd/fileSystem/mongoData/data:/data/db
+    ports:
+      - 27017:27017
+    restart: always
+
+  dbmanager:
+    image: ghcr.io/donsagiv/webportal:latest
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8080:8080"
+      - "8443:443"
+    depends_on:
+      - mongo
+    restart: always
+    environment:
+      - MONGO_CONN_STR="mongodb://192.168.4.4:27017"

@@ -9,6 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.dbmanager.consoledia
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.dbmanager.webportal", "asagiv.dbmanager.webportal\asagiv.dbmanager.webportal.csproj", "{59C5C37B-1961-4158-93E7-9A784F0B7C55}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFCA06D4-978C-4DD6-8C03-4832F3B090E7}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose_example.yml = docker-compose_example.yml
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
