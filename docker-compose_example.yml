@@ -5,21 +5,17 @@ services:
   mongo:
     image: mongo
     volumes:
-      - /extHd/fileSystem/mongoData/data:/data/db
+      - /extHd/fileSystem/mongoData/data:/data/db # Change host directory
     ports:
       - 27017:27017
     restart: always
-
-  dbmanager:
+    
+  webportal:
     image: ghcr.io/donsagiv/webportal:latest
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
     ports:
-      - "8080:8080"
-      - "8443:443"
+      - "8080:80"
     depends_on:
       - mongo
     restart: always
     environment:
-      - MONGO_CONN_STR="mongodb://192.168.4.4:27017"
+      - MONGO_CONN_STR=mongodb://mongo:27017
