@@ -50,10 +50,6 @@ jobs:
     - name: Push Docker Image Github - Latest Tag
       run: docker push ghcr.io/donsagiv/webportal:latest
       
-    # Push Docker Image for Date Tag to Docker Hub Public Repo
-    - name: Push Docker Image Docker Hub - Date Tag 
-      run: docker push donsagiv/dbmanager:${{ steps.date.outputs.date }}
-      
     # Push Docker Image for Latest Tag to Docker Hub Public Repo
     - name: Push Docker Image Docker Hub - Latest Tag
       run: docker push donsagiv/dbmanager:latest
