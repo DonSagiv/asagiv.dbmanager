@@ -26,6 +26,25 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
+Console.ReadKey();
+
+/*
+var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices(services =>
+    {
+        services.UseSerilog();
+        services.AddSingleton<IDbClient, MongoDbClient>();
+        services.AddSingleton<IDbDatabase, MongoDbDatabase>();
+        services.AddSingleton<CsvExporter>();
+        services.AddSingleton<FamilyCollection>();
+        services.AddSingleton<AddressCollection>();
+        services.AddSingleton<PeopleCollection>();
+        services.AddSingleton<EventsCollection>();
+        services.AddSingleton<EventGiftCollection>();
+        services.AddSingleton<FamilyEventGiftCollection>();
+    })
+    .Build();
+
 var familyCollection = host.Services.GetService<FamilyCollection>();
 var addressCollection = host.Services.GetService<AddressCollection>();
 
@@ -55,3 +74,4 @@ await foreach (var family in familyCollection.GetEnumerable())
 
     await addressCollection.AppendAsync(address);
 }
+*/
