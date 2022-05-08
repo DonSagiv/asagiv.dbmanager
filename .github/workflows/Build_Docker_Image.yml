@@ -33,16 +33,27 @@ jobs:
 
     # Build Docker Image
     - name: Build Docker Image
-      run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:${{ steps.date.outputs.date }} --tag ghcr.io/donsagiv/webportal:latest .
+      run: docker build --file ./asagiv.dbmanager.webportal/Dockerfile --build-arg PAT_ARG=${{ secrets.PACKAGE_PAT }} --tag ghcr.io/donsagiv/webportal:${{ steps.date.outputs.date }} --tag ghcr.io/donsagiv/webportal:latest --tag donsagiv/dbmanager:latest --tag donsagiv/dbmanager:${{ steps.date.outputs.date }} .
 
     # Log into Docker
-    - name: Log Into Docker
+    - name: Log Into Docker on Github
       run: docker login ghcr.io -u DonSagiv -p ${{ secrets.PACKAGE_PAT }}
+      
+    - name: Log Into Docker Hub
+      run: docker login -u donsagiv -p ${{ secrets.DOCKER_PWD }}
 
-    # Push Docker Image for Date Tag
-    - name: Push Docker Image - Date Tag
+    # Push Docker Image for Date Tag to Github
+    - name: Push Docker Image Github - Date Tag 
       run: docker push ghcr.io/donsagiv/webportal:${{ steps.date.outputs.date }}
       
-    # Push Docker Image for Date Tag
-    - name: Push Docker Image - Latest Tag
+    # Push Docker Image for Latest Tag to Github
+    - name: Push Docker Image Github - Latest Tag
       run: docker push ghcr.io/donsagiv/webportal:latest
+    
+    # Push Docker Image for Latest Tag to Docker Hub Public Repo
+    - name: Push Docker Image Docker Hub - Date Tag
+      run: docker push donsagiv/dbmanager:${{ steps.date.outputs.date }}
+      
+    # Push Docker Image for Latest Tag to Docker Hub Public Repo
+    - name: Push Docker Image Docker Hub - Latest Tag
+      run: docker push donsagiv/dbmanager:latest
