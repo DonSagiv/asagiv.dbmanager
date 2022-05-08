@@ -3,7 +3,9 @@ using asagiv.common.databases;
 using asagiv.common.Logging;
 using asagiv.common.mongodb;
 using asagiv.dbmanager.common.MongoDB;
-using asagiv.dbmanager.webportal.Data;
+using asagiv.dbmanager.common.Services;
+using asagiv.dbmanager.common.Utilities;
+using BlazorDownloadFile;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
@@ -17,6 +19,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.UseSerilog();
 builder.Services.AddSingleton<IDbClient, MongoDbClient>();
 builder.Services.AddSingleton<IDbDatabase, MongoDbDatabase>();
+builder.Services.AddSingleton<CsvExporter>();
 builder.Services.AddSingleton<FamilyCollection>();
 builder.Services.AddSingleton<AddressCollection>();
 builder.Services.AddSingleton<PeopleCollection>();
@@ -24,6 +27,7 @@ builder.Services.AddSingleton<EventsCollection>();
 builder.Services.AddSingleton<EventGiftCollection>();
 builder.Services.AddSingleton<FamilyEventGiftCollection>();
 builder.Services.AddSingleton<AddressBookDbService>();
+builder.Services.AddBlazorDownloadFile(lifetime: ServiceLifetime.Scoped);
 
 // Implement Blazorise
 builder.Services.AddBlazorise(o => o.Immediate = true)

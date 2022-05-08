@@ -3,13 +3,18 @@ using asagiv.dbmanager.common.MongoDB;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using Serilog;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace asagiv.dbmanager.webportal.Data
+namespace asagiv.dbmanager.common.Services
 {
     public class AddressBookDbService
     {
         #region Fields
-        private readonly ILogger? _logger;
+        private readonly ILogger _logger;
         private readonly FamilyCollection _families;
         private readonly AddressCollection _addresses;
         private readonly PeopleCollection _people;
@@ -25,7 +30,7 @@ namespace asagiv.dbmanager.webportal.Data
             EventsCollection events,
             FamilyEventGiftCollection familyEventGifts,
             EventGiftCollection eventGift,
-            ILogger? logger = null)
+            ILogger logger = null)
         {
             _logger = logger;
 
@@ -39,14 +44,14 @@ namespace asagiv.dbmanager.webportal.Data
         #endregion
 
         #region Methods
-        public async IAsyncEnumerable<Family> GetAllFamiliesAsync(string? searchString = null)
+        public async IAsyncEnumerable<Family> GetAllFamiliesAsync(string searchString = null)
         {
-            IAsyncEnumerable<Family?> familyEnumearble = _families.GetEnumerable()
+            IAsyncEnumerable<Family> familyEnumearble = _families.GetEnumerable()
                 .OrderBy(x => x?.FamilyName);
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {
-                _logger?.LogInformation("Searchstring set to {Searchstring}", searchString);
+                _logger?.Information("Searchstring set to {Searchstring}", searchString);
 
                 familyEnumearble = familyEnumearble
                     .Where(x => x?.AddressHeader.Contains(searchString, StringComparison.OrdinalIgnoreCase) ?? false);
@@ -74,7 +79,7 @@ namespace asagiv.dbmanager.webportal.Data
             }
         }
 
-        public async Task<Family?> GetFamilyAsync(ObjectId id)
+        public async Task<Family> GetFamilyAsync(ObjectId id)
         {
             var family = await _families.ReadAsync(id);
 
@@ -83,7 +88,7 @@ namespace asagiv.dbmanager.webportal.Data
                 return null;
             }
 
-            _logger?.LogInformation("Getting Family Info for Family.");
+            _logger?.Information("Getting Family Info for Family.");
 
             var addresses = await _addresses
                 .AsQueryable()
@@ -111,7 +116,7 @@ namespace asagiv.dbmanager.webportal.Data
                 .Select(x => x.Id)
                 .ToListAsync();
 
-            _logger?.LogInformation("Deleting {PeopleToDelete} People.", peopleToDelete.Count);
+            _logger?.Information("Deleting {PeopleToDelete} People.", peopleToDelete.Count);
 
             await _people.DeleteManyAsync(peopleToDelete.ToArray());
 
@@ -122,45 +127,45 @@ namespace asagiv.dbmanager.webportal.Data
                 .Select(x => x.Id)
                 .ToListAsync();
 
-            _logger?.LogInformation("Deleting {AddressesToDelete} Addresses.", addressesToDelete.Count);
+            _logger?.Information("Deleting {AddressesToDelete} Addresses.", addressesToDelete.Count);
 
             await _addresses.DeleteManyAsync(addressesToDelete.ToArray());
 
-            _logger?.LogInformation("Deleting Family.");
+            _logger?.Information("Deleting Family.");
 
             await _families.DeleteAsync(id);
         }
 
-        public async Task SaveFamilyAsync(Family family, IList<Address>? removedAddresses, IList<Person>? removedPeople)
+        public async Task SaveFamilyAsync(Family family, IList<Address> removedAddresses, IList<Person> removedPeople)
         {
-            _logger?.LogInformation("Saving Family.");
-            
+            _logger?.Information("Saving Family.");
+
             await _families.AppendAsync(family);
 
             // Delete removed addresses and people.
             if (removedAddresses != null)
             {
-                _logger?.LogInformation("Deleting {AddressesToRemove} Addresses.", removedAddresses.Count);
+                _logger?.Information("Deleting {AddressesToRemove} Addresses.", removedAddresses.Count);
 
                 await _addresses.DeleteManyAsync(removedAddresses.Select(x => x.Id).ToArray());
             }
 
             if (removedPeople != null)
             {
-                _logger?.LogInformation("Deleting {PeopleToRemove} Addresses.", removedPeople.Count);
+                _logger?.Information("Deleting {PeopleToRemove} Addresses.", removedPeople.Count);
 
                 await _people.DeleteManyAsync(removedPeople.Select(x => x.Id).ToArray());
             }
 
             // Add new addresses and people.
-            _logger?.LogInformation("Appending {AddressesToSave} Addresses.", family.Addresses.Count);
+            _logger?.Information("Appending {AddressesToSave} Addresses.", family.Addresses.Count);
 
             foreach (var address in family.Addresses)
             {
                 await _addresses.AppendAsync(address);
             }
 
-            _logger?.LogInformation("Appending {PeopleToSave} People.", family.People.Count);
+            _logger?.Information("Appending {PeopleToSave} People.", family.People.Count);
 
             foreach (var person in family.People)
             {
@@ -170,7 +175,7 @@ namespace asagiv.dbmanager.webportal.Data
 
         public Task<List<EventInfo>> GetAllEventsAsync()
         {
-            _logger?.LogInformation("Retrieving All Events");
+            _logger?.Information("Retrieving All Events");
 
             return _events
                 .AsQueryable()
@@ -180,11 +185,11 @@ namespace asagiv.dbmanager.webportal.Data
 
         public async Task<List<FamilyEventGift>> GetGiftsForEvent(ObjectId eventId)
         {
-            _logger?.LogInformation("Get Family Event Gifts for Event.");
+            _logger?.Information("Get Family Event Gifts for Event.");
 
             var eventInfo = await _events.ReadAsync(eventId);
 
-            if(eventInfo == null)
+            if (eventInfo == null)
             {
                 return new List<FamilyEventGift>();
             }
@@ -194,7 +199,7 @@ namespace asagiv.dbmanager.webportal.Data
 
         public async Task<List<FamilyEventGift>> GetFamilyEventGiftsAsync(EventInfo eventInfo)
         {
-            _logger?.LogInformation("Getting All Family Gifts for Event {EventInfo}.", eventInfo.EventName);
+            _logger?.Information("Getting All Family Gifts for Event {EventInfo}.", eventInfo.EventName);
 
             var familyEventGifts = await _familyEventGifts
                 .AsQueryable()
@@ -204,21 +209,21 @@ namespace asagiv.dbmanager.webportal.Data
             var giftIds = familyEventGifts.ConvertAll(x => x.GiftId);
             var familyIds = familyEventGifts.ConvertAll(x => x.FamilyId);
 
-            _logger?.LogInformation("Getting All Event Gifts.");
+            _logger?.Information("Getting All Event Gifts.");
 
             var gifts = await _eventGifts
                 .AsQueryable()
                 .Where(x => giftIds.Contains(x.Id))
                 .ToListAsync();
 
-            _logger?.LogInformation("Getting All Families.");
+            _logger?.Information("Getting All Families.");
 
             var families = await _families
                 .AsQueryable()
                 .Where(x => familyIds.Contains(x.Id))
                 .ToListAsync();
 
-            _logger?.LogInformation("Populating Family Event Gifts.");
+            _logger?.Information("Populating Family Event Gifts.");
 
             foreach (var familyEventGift in familyEventGifts)
             {
@@ -232,21 +237,21 @@ namespace asagiv.dbmanager.webportal.Data
 
         public async Task UpdateThankYouNoteWrittenAsync(FamilyEventGift familyEventGift)
         {
-            _logger?.LogInformation("Thank You Note Status Updated: {IsTrue}.", familyEventGift.ThankYouNoteWritten);
+            _logger?.Information("Thank You Note Status Updated: {IsTrue}.", familyEventGift.ThankYouNoteWritten);
 
             await _familyEventGifts.AppendAsync(familyEventGift);
         }
 
-        public Task<EventGift?> GetGiftAsync(ObjectId id)
+        public Task<EventGift> GetGiftAsync(ObjectId id)
         {
-            _logger?.LogInformation("Retrieving Gift.");
+            _logger?.Information("Retrieving Gift.");
 
             return _eventGifts.ReadAsync(id);
         }
 
         public async Task<List<FamilyEventGift>> GetFamilyEventGiftsAsync(ObjectId eventId, ObjectId giftId)
         {
-            _logger?.LogInformation("Getting Gift for Event.");
+            _logger?.Information("Getting Gift for Event.");
 
             var familyEventGifts = await _familyEventGifts
                 .AsQueryable()
@@ -273,14 +278,14 @@ namespace asagiv.dbmanager.webportal.Data
 
         public async Task SaveFamilyEventGiftAsync(EventGift eventGift, IEnumerable<FamilyEventGift> familyEventGifts, IEnumerable<FamilyEventGift> removedFamilyEventGifts)
         {
-            _logger?.LogInformation("Saving Family Event Gift.");
+            _logger?.Information("Saving Family Event Gift.");
 
             await _eventGifts.AppendAsync(eventGift);
 
             await _familyEventGifts.DeleteManyAsync(removedFamilyEventGifts
                 .Select(x => x.Id).ToArray());
 
-            foreach(var familyEventGift in familyEventGifts)
+            foreach (var familyEventGift in familyEventGifts)
             {
                 await _familyEventGifts.AppendAsync(familyEventGift);
             }
@@ -288,14 +293,14 @@ namespace asagiv.dbmanager.webportal.Data
 
         public async Task AppendEventAsync(EventInfo eventInfo)
         {
-            _logger?.LogInformation("Appending Event.");
+            _logger?.Information("Appending Event.");
 
             await _events.AppendAsync(eventInfo);
         }
 
         public async Task DeleteGiftAsync(FamilyEventGift familyEventGift)
         {
-            _logger?.LogInformation("Deleting Family Event Gift.");
+            _logger?.Information("Deleting Family Event Gift.");
 
             var allFamilyEventGifts = await _familyEventGifts
                 .AsQueryable()
@@ -310,7 +315,7 @@ namespace asagiv.dbmanager.webportal.Data
 
         public async Task DeleteEventAsync(EventInfo eventInfo)
         {
-            _logger?.LogInformation("Deleting Event.");
+            _logger?.Information("Deleting Event.");
 
             var eventFamilyGiftsToDelete = await _familyEventGifts
                 .AsQueryable()
@@ -321,7 +326,7 @@ namespace asagiv.dbmanager.webportal.Data
                 .Select(x => x.Id)
                 .ToArray();
 
-            _logger?.LogInformation("Deleting Family Event Gifts for Event.");
+            _logger?.Information("Deleting Family Event Gifts for Event.");
 
             await _familyEventGifts.DeleteManyAsync(eventFamilyGiftIds);
 
@@ -329,7 +334,7 @@ namespace asagiv.dbmanager.webportal.Data
                 .Select(x => x.GiftId)
                 .ToArray();
 
-            _logger?.LogInformation("Deleting Gifts for Event.");
+            _logger?.Information("Deleting Gifts for Event.");
 
             await _eventGifts.DeleteManyAsync(giftIds);
 

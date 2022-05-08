@@ -1,11 +1,19 @@
 ﻿@page "/"
 
+@using BlazorDownloadFile
 @using MongoDB.Bson
-@using asagiv.dbmanager.webportal.Data
+@using asagiv.dbmanager.common.Services
 @using asagiv.dbmanager.common.Models
 @using System.Linq
+@using asagiv.dbmanager.common.Utilities
+@using System.IO;
+@using Serilog;
+
 @inject NavigationManager NavManager
 @inject AddressBookDbService AddressBookService
+@inject CsvExporter CsvExporter
+@inject IBlazorDownloadFileService FileService
+@inject ILogger _logger;
 
 <PageTitle>Address Book</PageTitle>
 
@@ -18,8 +26,9 @@
     }
     else
     {
-        <div class="text-center">
+        <div class="d-flex justify-content-center">
             <Button Color="Color.Primary" Clicked="OnAddFamilyClicked" Margin="Margin.Is2">Add New Family</Button>
+            <Button Color="Color.Primary" Clicked="OnExportToCsvClickedAsync" Margin="Margin.Is2">Export to CSV</Button>
         </div>
 
         <div>
@@ -87,7 +96,10 @@
             </ModalContent>
         </Modal>
     }
+
 </div>
+
+
 
 @code {
     private IList<Family>? _families;
@@ -149,5 +161,29 @@
         _deleteFamilyModal?.Hide();
 
         _familyToDelete = null;
+    }
+
+    public async Task OnExportToCsvClickedAsync()
+    {
+        _logger?.Information("Downloading Families CSV");
+
+        using (var stream = new MemoryStream())
+        {
+            await CsvExporter.ExportFamiliesToCsvAsync(AddressBookService, stream);
+
+            var bytes = stream.ToArray();
+
+            try
+            {
+                await FileService.DownloadFile("family.csv", bytes, "text/csv");
+            }
+            catch(Exception ex)
+            {
+                _logger?.Information("CSV Export Error:", ex);
+                return;
+            }
+        }
+
+        _logger?.Information("Export Successful");
     }
 }

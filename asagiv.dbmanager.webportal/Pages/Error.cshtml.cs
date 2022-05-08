@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Diagnostics;
+using Serilog;
 
 namespace asagiv.dbmanager.webportal.Pages
 {
@@ -12,9 +13,9 @@ namespace asagiv.dbmanager.webportal.Pages
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-        private readonly ILogger<ErrorModel> _logger;
+        private readonly Serilog.ILogger _logger;
 
-        public ErrorModel(ILogger<ErrorModel> logger)
+        public ErrorModel(Serilog.ILogger logger)
         {
             _logger = logger;
         }
