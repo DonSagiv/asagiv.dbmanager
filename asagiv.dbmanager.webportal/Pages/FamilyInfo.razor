@@ -169,7 +169,14 @@ else
             return;
         }
 
-        _family.Addresses.Add(new common.Models.Address { FamilyId = _family.Id });
+        var addressToAdd = new common.Models.Address { FamilyId = _family.Id };
+
+        if (!_family.Addresses.Any(x => x.IsPrimary))
+        {
+            addressToAdd.IsPrimary = true;
+        }
+
+        _family.Addresses.Add(addressToAdd);
     }
 
     private void OnAddPersonClicked()
