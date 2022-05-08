@@ -3,6 +3,10 @@
     "WSL": {
       "commandName": "WSL2",
       "distributionName": ""
+    },
+    "Powershell": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
     }
   }
 }

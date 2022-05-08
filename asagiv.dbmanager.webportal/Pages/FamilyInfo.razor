@@ -85,6 +85,11 @@ else
 
                         </Fields>
 
+                        <Fields>
+                            <Check TValue="bool" Margin="Margin.Is3.OnX" Checked="@(address.IsPrimary)" CheckedChanged="@(b => OnAddressCheckedChanged(address, b))" />
+                            <FieldLabel>Is Primary Address</FieldLabel>
+                        </Fields>
+
                         <Button Color="Color.Secondary" Margin="Margin.Is3.FromTop" Clicked="@(_ => OnDeleteAddressClicked(address))">Delete Address</Button>
 
                     </Div>
@@ -144,7 +149,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _removedAddresses = new List<asagiv.dbmanager.common.Models.Address>();
+        _removedAddresses = new List<common.Models.Address>();
         _removedPeople = new List<Person>();
 
         if (Id == "new")
@@ -164,7 +169,7 @@ else
             return;
         }
 
-        _family.Addresses.Add(new asagiv.dbmanager.common.Models.Address { FamilyId = _family.Id });
+        _family.Addresses.Add(new common.Models.Address { FamilyId = _family.Id });
     }
 
     private void OnAddPersonClicked()
@@ -177,7 +182,7 @@ else
         _family.People.Add(new Person { FamilyId = _family.Id });
     }
 
-    private void OnDeleteAddressClicked(asagiv.dbmanager.common.Models.Address address)
+    private void OnDeleteAddressClicked(common.Models.Address address)
     {
         if (_family == null)
         {
@@ -211,5 +216,34 @@ else
         await AddressBookService.SaveFamilyAsync(_family, _removedAddresses, _removedPeople);
 
         NavManager.NavigateTo("");
+    }
+
+    private void OnAddressCheckedChanged(object objectInput, bool isChecked)
+    {
+        var addressInput = objectInput as common.Models.Address;
+
+        if (_family is null || addressInput == null)
+        {
+            return;
+        }
+
+        // Change whether or not the address is the primary address
+        addressInput.IsPrimary = isChecked;
+
+        if(!isChecked)
+        {
+            return;
+        }
+
+        // Uncheck all other primary addresses.
+        var previousPrimaryAddresses = _family
+            .Addresses
+            .Where(x => x.Id != addressInput.Id)
+            .Where(x => x.IsPrimary);
+
+        foreach (var address in previousPrimaryAddresses)
+        {
+            address.IsPrimary = false;
+        }
     }
 }

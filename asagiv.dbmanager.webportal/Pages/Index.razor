@@ -56,7 +56,7 @@
                         @if (family.Addresses.FirstOrDefault() != null)
                         {
                             <CardText>
-                                @foreach (var line in family.Addresses.First().GetLines())
+                                @foreach (var line in family.Addresses.First(x => x.IsPrimary).GetLines())
                                 {
                                     <div>@line</div>
                                 }

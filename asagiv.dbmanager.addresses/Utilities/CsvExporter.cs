@@ -1,12 +1,8 @@
-﻿using asagiv.dbmanager.common.Models;
-using asagiv.dbmanager.common.Services;
+﻿using asagiv.dbmanager.common.Services;
 using CsvHelper;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace asagiv.dbmanager.common.Utilities
@@ -24,11 +20,11 @@ namespace asagiv.dbmanager.common.Utilities
                     .GetAllFamiliesAsync()
                     .Select(x => new FamilyRecord(x.FamilyName,
                         x.AddressHeader,
-                        x.Addresses.FirstOrDefault()?.Street,
-                        x.Addresses.FirstOrDefault()?.City,
-                        x.Addresses.FirstOrDefault()?.State,
-                        x.Addresses.FirstOrDefault()?.Zip,
-                        x.Addresses.FirstOrDefault()?.Country));
+                        x.Addresses.FirstOrDefault(x => x.IsPrimary)?.Street,
+                        x.Addresses.FirstOrDefault(x => x.IsPrimary)?.City,
+                        x.Addresses.FirstOrDefault(x => x.IsPrimary)?.State,
+                        x.Addresses.FirstOrDefault(x => x.IsPrimary)?.Zip,
+                        x.Addresses.FirstOrDefault(x => x.IsPrimary)?.Country));
 
                 writer.WriteField("Family Name");
                 writer.WriteField("Address Header");

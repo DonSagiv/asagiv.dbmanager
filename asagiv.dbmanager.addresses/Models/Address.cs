@@ -1,4 +1,5 @@
-﻿using asagiv.common.mongodb;
+﻿using System.Linq;
+using asagiv.common.mongodb;
 using MongoDB.Bson;
 using System.Collections.Generic;
 
@@ -6,6 +7,7 @@ namespace asagiv.dbmanager.common.Models
 {
     public class Address : MongoDbModelBase
     {
+        private bool isPrimary;
         #region Properties
         public ObjectId FamilyId { get; set; }
         public string Street { get; set; }
@@ -13,6 +15,7 @@ namespace asagiv.dbmanager.common.Models
         public string State { get; set; }
         public string Zip { get; set; }
         public string Country { get; set; }
+        public bool IsPrimary { get; set; }
         #endregion
 
         #region Constructor
@@ -38,7 +41,9 @@ namespace asagiv.dbmanager.common.Models
                 lines.Add($"{City}, {Country} {Zip}");
             }
 
-            return lines.ToArray();
+            return lines
+                .Select(x => x.Trim()) // Remove all whitespace
+                .ToArray();
         }
 
         public override string ToString()
